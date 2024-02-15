@@ -1,2 +1,6 @@
 .DS_Store
 .idea
+.bloop
+.metals
+.global-logging
+.tast-temp-directory
