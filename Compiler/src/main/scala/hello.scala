@@ -47,9 +47,14 @@ object Tokenizer{
   }
 
 
-
+  /*
+  we could instead of splitting the input string, we could
+  work through it as a list of characters, processing one character at a time.
+ */
   def test1tokenize(input:String): List[Token] = {
+    // for yield is just shorthand for a map and a flatten
     val tokens = for{
+      // we need to account for string literals and comments
       token <- input.split("\\s+")
     }yield token match{
       case "{" => leftBracesToken
@@ -64,6 +69,8 @@ object Tokenizer{
       case "INTEGER" => INTEGERToken
       case "BOOL" => BOOLToken
       case ";" => semicolonToken
+      // need to account for += and -=, as well as ++ and --
+
       case _ =>
         if(token.matches("[a-zA-Z][a-zA-Z0-9]*")){
           IdentifierToken(token)
