@@ -48,7 +48,7 @@ object Tokenizer{
 
 
 
-  def test1tokenize(input:String):Mylist[Token] = {
+  def test1tokenize(input:String): List[Token] = {
     val tokens = for{
       token <- input.split("\\s+")
     }yield token match{
@@ -73,6 +73,7 @@ object Tokenizer{
           throw new IllegalArgumentException(s"Unrecognized token: $token")
         }
     }
+    tokens.toList
   }
 
 
