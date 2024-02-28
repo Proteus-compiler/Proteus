@@ -1,4 +1,5 @@
 import scala.util.matching.Regex
+import scala.collection.mutable.ListBuffer
 sealed trait Token
 
 //case object extends Token
@@ -22,7 +23,7 @@ object Tokenizer{
   @main def hello(): Unit = {
     print("Hello World");
   }
-}
+
 
 val leftBracesID: Regex = "\\{".r
 
@@ -39,12 +40,22 @@ def test1tokenize(input:String):Mylist[Token] = {
 
 //********************************************
 // List of reserved words
-val WordList: List[String] = List("word1", "word2", "word3");
+  val WordList: List[String] = List("word1", "word2", "word3");
+
+// Alternatively, we can make a mutable list
+  var Words = new ListBuffer[String]()
+  Words += "word1"
+  Words += "word2"
+
 
 // Converting a list to a map
-val ReserveMap1: Map[Int, String] = List(1 -> "words").toMap;
+  val ReserveMap1: Map[Int, String] = List(1 -> "words").toMap;
 
 // Creating a map without a list
-val ReserveMap2: Map[Int, String] = Map(100 -> "word", 101 -> "words");
+  val ReserveMap2: Map[Int, String] = Map(100 -> "word", 101 -> "words");
 
+
+
+
+} // END OF MAIN
 
