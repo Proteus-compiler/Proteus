@@ -56,6 +56,5 @@ def test1tokenize(input:String):Mylist[Token] = {
 
 
 
-
 } // END OF MAIN
 
