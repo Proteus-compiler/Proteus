@@ -42,6 +42,10 @@ def test1tokenize(input:String):Mylist[Token] = {
 // List of reserved words
   val WordList: List[String] = List("word1", "word2", "word3");
 
+  // "appending" to an immutable list by making a new list that includes previous list plus new items
+  // I think this might be the way to go for making a list
+  val WordListTwo = "word4" :: WordList 
+
 // Alternatively, we can make a mutable list
   var Words = new ListBuffer[String]()
   Words += "word1"
