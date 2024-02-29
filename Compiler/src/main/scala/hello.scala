@@ -101,24 +101,55 @@ object Tokenizer{
 
 
   //********************************************
-  // List of reserved words
-  val WordList: List[String] = List("word1", "word2", "word3")
+  
+  // Mutable list for reserved words
+  var ReserveWordsList = new ListBuffer[String]()
+    ReserveWordsList += "actor"
+    ReserveWordsList += "on"
+    ReserveWordsList += "statemachine"
+    ReserveWordsList += "state"
+    ReserveWordsList += "entry"
+    ReserveWordsList += "exit"
+    ReserveWordsList += "func"
+    ReserveWordsList += "initial"
+    ReserveWordsList += "event"
+    ReserveWordsList += "if"
+    ReserveWordsList += "while"
+    ReserveWordsList += "dec"
+    ReserveWordsList += "assign"
+    ReserveWordsList += "exit"
+    ReserveWordsList += "apply"
+    ReserveWordsList += "send"
+    ReserveWordsList += "print"
+    ReserveWordsList += "println"
+    ReserveWordsList += "int"
+    ReserveWordsList += "string"
+    ReserveWordsList += "bool"
+    ReserveWordsList += "actorname"
+    ReserveWordsList += "statename"
+    ReserveWordsList += "eventname"
+    ReserveWordsList += "go"
+    ReserveWordsList += "goif"
+    ReserveWordsList += "else"
+    ReserveWordsList += "const"
+    ReserveWordsList += "cpp"
+    ReserveWordsList += "true"
+    ReserveWordsList += "false"
+    ReserveWordsList += "monitor"
+    ReserveWordsList += "return"
+    ReserveWordsList += "wait"
 
-  // "appending" to an immutable list by making a new list that includes previous list plus new items
-  // I think this might be the way to go for making a list
-  val WordListTwo = "word4" :: WordList
+    //I don't know yet if these need to be capitalized the way they are in the grammar
+  
 
-  // Alternatively, we can make a mutable list
-  var Words = new ListBuffer[String]()
-  Words += "word1"
-  Words += "word2"
+  // Converting the list to a map
+  val ReserveWordsListListMap = ReserveWordsList.zipWithIndex.map{
+    case("actor", actorToken) => (actorToken)
+    case("on", onToken) => (onToken)
 
+    //Not sure if this is correct
 
-  // Converting a list to a map
-  val ReserveMap1: Map[Int, String] = List(1 -> "words").toMap
-
-  // Creating a map without a list
-  val ReserveMap2: Map[Int, String] = Map(100 -> "word", 101 -> "words")
+  } // End of map
 
 
 
