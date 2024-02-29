@@ -2,11 +2,6 @@ import scala.util.matching.Regex
 import scala.collection.mutable.ListBuffer
 sealed trait Token
 
-//case object extends Token
-//case object extends Token
-
-
-
 case object leftBracesToken extends Token
 case object leftParenToken extends Token
 case object rightParenToken extends Token
@@ -101,55 +96,44 @@ object Tokenizer{
 
 
   //********************************************
-  
-  // Mutable list for reserved words
-  var ReserveWordsList = new ListBuffer[String]()
-    ReserveWordsList += "actor"
-    ReserveWordsList += "on"
-    ReserveWordsList += "statemachine"
-    ReserveWordsList += "state"
-    ReserveWordsList += "entry"
-    ReserveWordsList += "exit"
-    ReserveWordsList += "func"
-    ReserveWordsList += "initial"
-    ReserveWordsList += "event"
-    ReserveWordsList += "if"
-    ReserveWordsList += "while"
-    ReserveWordsList += "dec"
-    ReserveWordsList += "assign"
-    ReserveWordsList += "exit"
-    ReserveWordsList += "apply"
-    ReserveWordsList += "send"
-    ReserveWordsList += "print"
-    ReserveWordsList += "println"
-    ReserveWordsList += "int"
-    ReserveWordsList += "string"
-    ReserveWordsList += "bool"
-    ReserveWordsList += "actorname"
-    ReserveWordsList += "statename"
-    ReserveWordsList += "eventname"
-    ReserveWordsList += "go"
-    ReserveWordsList += "goif"
-    ReserveWordsList += "else"
-    ReserveWordsList += "const"
-    ReserveWordsList += "cpp"
-    ReserveWordsList += "true"
-    ReserveWordsList += "false"
-    ReserveWordsList += "monitor"
-    ReserveWordsList += "return"
-    ReserveWordsList += "wait"
 
-    //I don't know yet if these need to be capitalized the way they are in the grammar
-  
+  // Creating a reserved words map
+  var ReserveWords = scala.collection.mutable.Map[String, Token]()
+    ReserveWords += ("actor", actorToken)
+    ReserveWords += ("on", onToken)
+    ReserveWords += ("statemachine", statemachineToken)
+    ReserveWords += ("state", stateToken)
+    ReserveWords += ("entry", entryToken)
+    ReserveWords += ("exit", exitToken)
+    ReserveWords += ("func", funcToken)
+    ReserveWords += ("initial", initialToken)
+    ReserveWords += ("event", eventToken)
+    ReserveWords += ("if", ifToken)
+    ReserveWords += ("while", whileToken)
+    ReserveWords += ("dec", decToken)
+    ReserveWords += ("assign", assignToken)
+    ReserveWords += ("exit", exitToken)
+    ReserveWords += ("apply", applyToken)
+    ReserveWords += ("send", sendToken)
+    ReserveWords += ("print", printToken)
+    ReserveWords += ("println", printlnToken)
+    ReserveWords += ("int", intToken)
+    ReserveWords += ("string", stringToken)
+    ReserveWords += ("bool", boolToken)
+    ReserveWords += ("actorname", actornameToken)
+    ReserveWords += ("statename", statenameToken)
+    ReserveWords += ("eventname", eventnameToken)
+    ReserveWords += ("go", goToken)
+    ReserveWords += ("goif", goifToken)
+    ReserveWords += ("else", elseToken)
+    ReserveWords += ("const", constToken)
+    ReserveWords += ("cpp", cppToken)
+    ReserveWords += ("true", trueToken)
+    ReserveWords += ("false", falseToken)
+    ReserveWords += ("monitor", monitorToken)
+    ReserveWords += ("return", returnToken)
+    ReserveWords += ("wait", waitToken)
 
-  // Converting the list to a map
-  val ReserveWordsListListMap = ReserveWordsList.zipWithIndex.map{
-    case("actor", actorToken) => (actorToken)
-    case("on", onToken) => (onToken)
-
-    //Not sure if this is correct
-
-  } // End of map
 
 
 
