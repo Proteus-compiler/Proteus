@@ -28,7 +28,7 @@ case object whileToken extends Token
 case object decToken extends Token
 case object assignToken extends Token
 case object applyToken extends Token
-case object sendtoken extends Token
+case object sendToken extends Token
 case object printToken extends Token
 case object printlnToken extends Token
 case object intToken extends Token
