@@ -2,6 +2,7 @@ import scala.util.matching.Regex
 import scala.collection.mutable.ListBuffer
 sealed trait Token
 
+// Symbol tokens
 case object leftBracesToken extends Token
 case object leftParenToken extends Token
 case object rightParenToken extends Token
@@ -10,15 +11,43 @@ case object plusEqualsToken extends Token
 case object minusEqualsToken extends Token
 case object plusPlusToken extends Token
 case object minusMinusToken extends Token
-case object eventToken extends Token
-case object actorToken extends Token
-//case object boolToken extends Token
-case object statemachineToken extends Token
-case object initialToken extends Token
-case object stateToken extends Token
-case object INTEGERToken extends Token
-case object BOOLToken extends Token
 case object semicolonToken extends Token
+// Reserved word tokens
+case object actorToken extends Token
+case object onToken extends Token
+case object statemachineToken extends Token
+case object stateToken extends Token
+case object entryToken extends Token
+case object exitToken extends Token
+case object funcToken extends Token
+case object initialToken extends Token
+case object eventToken extends Token
+case object ifToken extends Token
+case object ifToken extends Token
+case object whileToken extends Token
+case object decToken extends Token
+case object assignToken extends Token
+case object applyToken extends Token
+case object sendtoken extends Token
+case object printToken extends Token
+case object printlnToken extends Token
+case object intToken extends Token
+case object stringToken extends Token
+case object boolToken extends Token
+case object actornameToken extends Token
+case object statenameToken extends Token
+case object eventnameToken extends Token
+case object goToken extends Token
+case object goifToken extends Token
+case object elseToken extends Token
+case object constToken extends Token
+case object cppToken extends Token
+case object trueToken extends Token
+case object falseToken extends Token
+case object monitorToken extends Token
+case object returnToken extends Token
+case object waitToken extends Token
+
 
 case class IdentifierToken(name: String) extends Token
 case class IntegerLiteralToken(value: Int) extends Token
@@ -72,8 +101,8 @@ object Tokenizer{
       case "statemachine" => statemachineToken
       case "initial" => initialToken
       case "state" => stateToken
-      case "INTEGER" => INTEGERToken
-      case "BOOL" => BOOLToken
+      case "INTEGER" => intToken
+      case "BOOL" => boolToken
       case ";" => semicolonToken
 
       case _ =>
@@ -112,7 +141,6 @@ object Tokenizer{
     ReserveWords += ("while", whileToken)
     ReserveWords += ("dec", decToken)
     ReserveWords += ("assign", assignToken)
-    ReserveWords += ("exit", exitToken)
     ReserveWords += ("apply", applyToken)
     ReserveWords += ("send", sendToken)
     ReserveWords += ("print", printToken)
