@@ -23,7 +23,6 @@ case object funcToken extends Token
 case object initialToken extends Token
 case object eventToken extends Token
 case object ifToken extends Token
-case object ifToken extends Token
 case object whileToken extends Token
 case object decToken extends Token
 case object assignToken extends Token
@@ -82,6 +81,7 @@ object Tokenizer{
   This would allow us to handle multi-character tokens more easily.
   The current setup probably won't work well for comments and string literals because we're stripping whitespace.
  */
+  /**
   def test1tokenize(input:String): List[Token] = {
     // for yield is just shorthand for a map and a flatten
     val tokens = for{
@@ -94,8 +94,8 @@ object Tokenizer{
       case ")" => rightParenToken
       case "+=" => plusEqualsToken
       case "-=" => minusEqualsToken
-      case "++" => plusPlusToken
-      case "--" => minusMinusToken
+     // case "++" => plusPlusToken
+      //case "--" => minusMinusToken
       case "event" => eventToken
       case "actor" => actorToken
       case "statemachine" => statemachineToken
@@ -104,16 +104,24 @@ object Tokenizer{
       case "INTEGER" => intToken
       case "BOOL" => boolToken
       case ";" => semicolonToken
-
+      //comma t0ken
+      //single and double equals token
+      //curly, parens, comma, arrow ->, semicolon, exclamation point, != 
+      //binops will be their own tokens: multiply, divide, left/right shift, less/greater equals to, double equals,
+      //missing some binops - double check grammar 
+      //not equals, xor, logical and, logical or, bitwise and, bitwise or
+      
       case _ =>
         if(token.matches("[a-zA-Z][a-zA-Z0-9]*")){
           IdentifierToken(token)
         }else if(token.matches("[0-9]+")) {
           IntegerLiteralToken(token.toInt)
-        }else if(token.matches("//.*") || token.matches("/\\*.*\\*/")){
+        */
+        //}else if(token.matches("//.*") || token.matches("/\\*.*\\*/")){
           // ignore comments
           None
         // string literals
+        /**
         }else if(token.matches("\"[a-zA-Z0-9]*\"")){
           StringLiteralToken(token)
         }else{
@@ -121,6 +129,65 @@ object Tokenizer{
         }
     }
     tokens.toList
+    */
+  //}
+
+  // This is not done
+          // ToDo: Implement Reserved words
+          // ToDo: Double Check Symbols and Operators with grammar
+          // ToDo: Double Check \" in string literal Regex
+  def main(args: Array[String]): Unit = {
+    val tokens = lexer(args.toString)
+    print(tokens)
+  }
+
+
+  private def lexer(input:String): List[Token] = {
+    val validTokens = List(
+      "{" -> leftBracesToken,
+      "}" -> rightBracesToken,
+      "(" -> leftParenToken,
+      ")" -> rightParenToken,
+      "+=" -> plusEqualsToken,
+      "-=" -> minusEqualsToken,
+      "++" -> plusPlusToken,
+      "--" -> minusMinusToken,
+      "event" -> eventToken,
+      "actor" -> actorToken,
+      "statemachine" -> statemachineToken,
+      "initial" -> initialToken,
+      "state" -> stateToken,
+      "INTEGER" -> intToken,
+      "BOOL" -> boolToken,
+      ";" -> semicolonToken
+    )
+
+    def tokenize(chars:List[Char], currentToken: String, tokens: List[Token]):List[Token] = chars match {
+      case Nil if currentToken.nonEmpty => tokens :+ tokenFromCurrent(currentToken)
+      case Nil => tokens
+      case head :: tail =>
+        val newToken = currentToken + head
+        // Add condition here to check for reserved words
+        if(validTokens.exists(_._1 == newToken)) {
+          tokenize(tail, "", tokens :+ validTokens.find(_._1 == newToken).get._2)
+        } else if (validTokens.exists(_._1.startsWith(newToken))) {
+          tokenize(tail, newToken, tokens)
+        } else if (currentToken.nonEmpty) {
+          tokenize(tail, head.toString, tokens :+ tokenFromCurrent(currentToken))
+        } else{
+          tokenize(tail, "", tokens)
+        }
+    }
+
+    def tokenFromCurrent(current: String): Token = current match {
+      case s if s.matches("[a-zA-Z][a-zA-Z0-9]*") => IdentifierToken(s)
+      case s if s.matches("[0-9]+") => IntegerLiteralToken(s.toInt)
+      case s if s.matches("//.*") || s.matches("/\\*.*\\*/") => null //This ignores comments
+      case s if s.matches("\"[a-zA-Z0-9]*\"") => StringLiteralToken(s) // Needs to start with " / needs to also account for backslash
+      case _ => throw new IllegalArgumentException(s"Unrecognized token: $current")
+    }
+
+    tokenize(input.toList, "", List.empty).filter(_ != null) // Filters out null
   }
 
 
@@ -139,9 +206,10 @@ object Tokenizer{
     ReserveWords += ("event", eventToken)
     ReserveWords += ("if", ifToken)
     ReserveWords += ("while", whileToken)
-    ReserveWords += ("dec", decToken)
-    ReserveWords += ("assign", assignToken)
-    ReserveWords += ("apply", applyToken)
+    //ReserveWords += ("dec", decToken)
+    //ReserveWords += ("assign", assignToken) 
+    //assign is actually single equals, and not a reserved word
+    //ReserveWords += ("apply", applyToken)
     ReserveWords += ("send", sendToken)
     ReserveWords += ("print", printToken)
     ReserveWords += ("println", printlnToken)
@@ -155,7 +223,8 @@ object Tokenizer{
     ReserveWords += ("goif", goifToken)
     ReserveWords += ("else", elseToken)
     ReserveWords += ("const", constToken)
-    ReserveWords += ("cpp", cppToken)
+    //ReserveWords += ("cpp", cppToken)
+    //cpp was added in as a hack and not needed for us
     ReserveWords += ("true", trueToken)
     ReserveWords += ("false", falseToken)
     ReserveWords += ("monitor", monitorToken)
