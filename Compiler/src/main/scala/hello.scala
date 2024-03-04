@@ -119,7 +119,7 @@ object Tokenizer{
         */
         //}else if(token.matches("//.*") || token.matches("/\\*.*\\*/")){
           // ignore comments
-          None
+          //None
         // string literals
         /**
         }else if(token.matches("\"[a-zA-Z0-9]*\"")){
