@@ -53,10 +53,6 @@ case class IntegerLiteralToken(value: Int) extends Token
 case class StringLiteralToken(value: String) extends Token
 
 object Tokenizer{
-  /*@main def hello(): Unit = {
-    print("Hello World")
-  }*/
-
 
   val leftBracesID: Regex = "\\{".r
 
@@ -136,8 +132,9 @@ object Tokenizer{
           // ToDo: Implement Reserved words
           // ToDo: Double Check Symbols and Operators with grammar
           // ToDo: Double Check \" in string literal Regex
+          // ToDo: Double Check String Literal, Identifier, Integer Literal regex.
   def main(args: Array[String]): Unit = {
-    val tokens = lexer(args.toString)
+    val tokens = lexer("event hello {}")
     print(tokens)
   }
 
@@ -170,16 +167,17 @@ object Tokenizer{
         // Add condition here to check for reserved words
         if(validTokens.exists(_._1 == newToken)) {
           tokenize(tail, "", tokens :+ validTokens.find(_._1 == newToken).get._2)
-        } else if (validTokens.exists(_._1.startsWith(newToken))) {
-          tokenize(tail, newToken, tokens)
-        } else if (currentToken.nonEmpty) {
-          tokenize(tail, head.toString, tokens :+ tokenFromCurrent(currentToken))
-        } else{
+        } else if (currentToken.nonEmpty && head==' ' ) {
+          tokenize(tail, "", tokens :+ tokenFromCurrent(currentToken))
+        } else if (head==' ') {
           tokenize(tail, "", tokens)
+        } else{
+          tokenize(tail, newToken, tokens)
         }
     }
 
     def tokenFromCurrent(current: String): Token = current match {
+      case "" => null //Ignore empty tokens
       case s if s.matches("[a-zA-Z][a-zA-Z0-9]*") => IdentifierToken(s)
       case s if s.matches("[0-9]+") => IntegerLiteralToken(s.toInt)
       case s if s.matches("//.*") || s.matches("/\\*.*\\*/") => null //This ignores comments
