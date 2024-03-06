@@ -29,6 +29,13 @@ case object doubleEqualsToken extends Token // ==
 case object notEqualsToken extends Token // !=
 case object upArrowToken extends Token // ^
 case object logicalAndToken extends Token // &&
+case object logicalOrToken extends Token // ||
+case object mulEqualsToken extends Token // *=
+case object divEqualsToken extends Token // /=
+case object modEqualsToken extends Token // %=
+case object doubleLeftArrowEqualsToken extends Token // <<=
+case object doubleRightArrowEqualsToken extends Token // >>=
+case object upArrowEqualsToken extends Token // ^=
 // need to confirm xor, logical and, logical or, bitwise and, bitwise or
 // Reserved word tokens
 case object actorToken extends Token
@@ -92,50 +99,6 @@ object Tokenizer{
   The current setup probably won't work well for comments and string 
   literals because we're stripping whitespace.
  */
-  /**
-  def test1tokenize(input:String): List[Token] = {
-    // for yield is just shorthand for a map and a flatten
-    val tokens = for{
-      // we need to account for string literals and comments
-      token <- input.split("\\s+")
-    }yield token match{
-      case "{" => leftBracesToken
-      case "}" => rightBracesToken
-      case "(" => leftParenToken
-      case ")" => rightParenToken
-      case "+=" => plusEqualsToken
-      case "-=" => minusEqualsToken
-     // case "++" => plusPlusToken
-      //case "--" => minusMinusToken
-      case "event" => eventToken
-      case "actor" => actorToken
-      case "statemachine" => statemachineToken
-      case "initial" => initialToken
-      case "state" => stateToken
-      case "INTEGER" => intToken
-      case "BOOL" => boolToken
-      case ";" => semicolonToken
-      
-      case _ =>
-        if(token.matches("[a-zA-Z][a-zA-Z0-9]*")){
-          IdentifierToken(token)
-        }else if(token.matches("[0-9]+")) {
-          IntegerLiteralToken(token.toInt)
-        */
-        //}else if(token.matches("//.*") || token.matches("/\\*.*\\*/")){
-          // ignore comments
-          //None
-        // string literals
-        /**
-        }else if(token.matches("\"[a-zA-Z0-9]*\"")){
-          StringLiteralToken(token)
-        }else{
-          throw new IllegalArgumentException(s"Unrecognized token: $token")
-        }
-    }
-    tokens.toList
-    */
-  //}
 
   // This is not done
           // ToDo: Implement Reserved words
@@ -179,9 +142,6 @@ object Tokenizer{
    */
 
 
-  // removing event, actor, statemachine, initial, state
-  // integer, bool, since they are in the reserved words
-  // adding the BinOp tokens
   private def lexer(input:String): List[Token] = {
     val validTokens = List(
       "{" -> leftBracesToken,
@@ -206,6 +166,7 @@ object Tokenizer{
       "<=" -> leftArrowEqualsToken,
       ">=" -> rightArrowEqualsToken,
       "==" -> doubleEqualsToken,
+      "="  -> singleEqualsToken,
       "!=" -> notEqualsToken,
       "^" -> upArrowToken,
       "&&" -> logicalAndToken
