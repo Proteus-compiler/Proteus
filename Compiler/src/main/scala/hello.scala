@@ -36,7 +36,6 @@ case object modEqualsToken extends Token // %=
 case object doubleLeftArrowEqualsToken extends Token // <<=
 case object doubleRightArrowEqualsToken extends Token // >>=
 case object upArrowEqualsToken extends Token // ^=
-// need to confirm xor, logical and, logical or, bitwise and, bitwise or
 // Reserved word tokens
 case object actorToken extends Token
 case object onToken extends Token
