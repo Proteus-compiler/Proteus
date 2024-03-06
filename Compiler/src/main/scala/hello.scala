@@ -4,14 +4,32 @@ sealed trait Token
 
 // Symbol tokens
 case object leftBracesToken extends Token
+case object rightBracesToken extends Token
 case object leftParenToken extends Token
 case object rightParenToken extends Token
-case object rightBracesToken extends Token
+case object singleEqualsToken extends Token
 case object plusEqualsToken extends Token
 case object minusEqualsToken extends Token
-case object plusPlusToken extends Token
-case object minusMinusToken extends Token
 case object semicolonToken extends Token
+case object commaToken extends Token
+case object notToken extends Token
+//BinOp tokens
+case object multiplyToken extends Token // *
+case object divideToken extends Token // /
+case object moduloToken extends Token // %
+case object plusToken extends Token // +
+case object minusToken extends Token // -
+case object doubleLeftArrowToken extends Token // <<
+case object doubleRightArrowToken extends Token // >>
+case object leftArrowToken extends Token // <
+case object rightArrowToken extends Token // >
+case object leftArrowEqualsToken extends Token // <=
+case object rightArrowEqualsToken extends Token // >=
+case object doubleEqualsToken extends Token // ==
+case object notEqualsToken extends Token // !=
+case object upArrowToken extends Token // ^
+case object logicalAndToken extends Token // &&
+// need to confirm xor, logical and, logical or, bitwise and, bitwise or
 // Reserved word tokens
 case object actorToken extends Token
 case object onToken extends Token
@@ -24,9 +42,6 @@ case object initialToken extends Token
 case object eventToken extends Token
 case object ifToken extends Token
 case object whileToken extends Token
-case object decToken extends Token
-case object assignToken extends Token
-case object applyToken extends Token
 case object sendToken extends Token
 case object printToken extends Token
 case object printlnToken extends Token
@@ -40,7 +55,6 @@ case object goToken extends Token
 case object goifToken extends Token
 case object elseToken extends Token
 case object constToken extends Token
-case object cppToken extends Token
 case object trueToken extends Token
 case object falseToken extends Token
 case object monitorToken extends Token
@@ -75,7 +89,8 @@ object Tokenizer{
   we could instead of splitting the input string, we could
   work through it as a list of characters, processing one character at a time.
   This would allow us to handle multi-character tokens more easily.
-  The current setup probably won't work well for comments and string literals because we're stripping whitespace.
+  The current setup probably won't work well for comments and string 
+  literals because we're stripping whitespace.
  */
   /**
   def test1tokenize(input:String): List[Token] = {
@@ -100,12 +115,6 @@ object Tokenizer{
       case "INTEGER" => intToken
       case "BOOL" => boolToken
       case ";" => semicolonToken
-      //comma t0ken
-      //single and double equals token
-      //curly, parens, comma, arrow ->, semicolon, exclamation point, != 
-      //binops will be their own tokens: multiply, divide, left/right shift, less/greater equals to, double equals,
-      //missing some binops - double check grammar 
-      //not equals, xor, logical and, logical or, bitwise and, bitwise or
       
       case _ =>
         if(token.matches("[a-zA-Z][a-zA-Z0-9]*")){
@@ -130,7 +139,7 @@ object Tokenizer{
 
   // This is not done
           // ToDo: Implement Reserved words
-          // ToDo: Double Check Symbols and Operators with grammar
+          // ToDo: Double Check Symbols and Operators with grammar - DONE
           // ToDo: Double Check \" in string literal Regex
           // ToDo: Double Check String Literal, Identifier, Integer Literal regex.
   def main(args: Array[String]): Unit = {
@@ -138,25 +147,68 @@ object Tokenizer{
     print(tokens)
   }
 
+  //from 430 github
+  /* public static final Map<String, Token> RESERVED_WORDS =
+        new HashMap<String, Token>() {{
+            // put("return", new ReturnToken());
+            put("let", new LetToken());
+        }};
+   */
 
+   /* private Token tryTokenizeIdentifierOrReservedWord() {
+        if (Character.isLetter(input.charAt(pos))) {
+            final StringBuffer read = new StringBuffer();
+            read.append(input.charAt(pos));
+            pos++;
+            while (pos < input.length() &&
+                   Character.isLetterOrDigit(input.charAt(pos))) {
+                read.append(input.charAt(pos));
+                pos++;
+            }
+            final String asString = read.toString();
+            Token reservedWord = RESERVED_WORDS.get(asString);
+            if (reservedWord != null) {
+                return reservedWord;
+            } else {
+                return new IdentifierToken(asString);
+            }
+        } else {
+            return null;
+        }
+    }
+   */
+
+
+  // removing event, actor, statemachine, initial, state
+  // integer, bool, since they are in the reserved words
+  // adding the BinOp tokens
   private def lexer(input:String): List[Token] = {
     val validTokens = List(
       "{" -> leftBracesToken,
       "}" -> rightBracesToken,
       "(" -> leftParenToken,
       ")" -> rightParenToken,
+      "=" -> singleEqualsToken,
       "+=" -> plusEqualsToken,
       "-=" -> minusEqualsToken,
-      "++" -> plusPlusToken,
-      "--" -> minusMinusToken,
-      "event" -> eventToken,
-      "actor" -> actorToken,
-      "statemachine" -> statemachineToken,
-      "initial" -> initialToken,
-      "state" -> stateToken,
-      "INTEGER" -> intToken,
-      "BOOL" -> boolToken,
-      ";" -> semicolonToken
+      ";" -> semicolonToken,
+      "," -> commaToken,
+      "!" -> notToken,
+      "*" -> multiplyToken,
+      "/" -> divideToken,
+      "%" -> moduloToken,
+      "+" -> plusToken,
+      "-" -> minusToken,
+      "<<" -> doubleLeftArrowToken,
+      ">>" -> doubleRightArrowToken,
+      "<" -> leftArrowToken,
+      ">" -> rightArrowToken,
+      "<=" -> leftArrowEqualsToken,
+      ">=" -> rightArrowEqualsToken,
+      "==" -> doubleEqualsToken,
+      "!=" -> notEqualsToken,
+      "^" -> upArrowToken,
+      "&&" -> logicalAndToken
     )
 
     def tokenize(chars:List[Char], currentToken: String, tokens: List[Token]):List[Token] = chars match {
@@ -189,7 +241,6 @@ object Tokenizer{
   }
 
 
-  //********************************************
 
   // Creating a reserved words map
   var ReserveWords = scala.collection.mutable.Map[String, Token]()
@@ -204,10 +255,6 @@ object Tokenizer{
     ReserveWords += ("event", eventToken)
     ReserveWords += ("if", ifToken)
     ReserveWords += ("while", whileToken)
-    //ReserveWords += ("dec", decToken)
-    //ReserveWords += ("assign", assignToken) 
-    //assign is actually single equals, and not a reserved word
-    //ReserveWords += ("apply", applyToken)
     ReserveWords += ("send", sendToken)
     ReserveWords += ("print", printToken)
     ReserveWords += ("println", printlnToken)
@@ -221,8 +268,6 @@ object Tokenizer{
     ReserveWords += ("goif", goifToken)
     ReserveWords += ("else", elseToken)
     ReserveWords += ("const", constToken)
-    //ReserveWords += ("cpp", cppToken)
-    //cpp was added in as a hack and not needed for us
     ReserveWords += ("true", trueToken)
     ReserveWords += ("false", falseToken)
     ReserveWords += ("monitor", monitorToken)
