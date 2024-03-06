@@ -6,3 +6,5 @@
 .tast-temp-directory
 .metals.sbt
 
+*.class
+*.tasty

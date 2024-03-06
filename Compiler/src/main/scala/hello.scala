@@ -105,7 +105,7 @@ object Tokenizer{
           // ToDo: Double Check \" in string literal Regex
           // ToDo: Double Check String Literal, Identifier, Integer Literal regex.
   def main(args: Array[String]): Unit = {
-    val tokens = lexer("event hello {}")
+    val tokens = lexer("5+7")
     print(tokens)
   }
 
