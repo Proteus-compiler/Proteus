@@ -7,12 +7,12 @@ case object leftBracesToken extends Token
 case object rightBracesToken extends Token
 case object leftParenToken extends Token
 case object rightParenToken extends Token
-case object singleEqualsToken extends Token
-case object plusEqualsToken extends Token
-case object minusEqualsToken extends Token
-case object semicolonToken extends Token
-case object commaToken extends Token
-case object notToken extends Token
+case object singleEqualsToken extends Token 
+case object plusEqualsToken extends Token 
+case object minusEqualsToken extends Token 
+case object semicolonToken extends Token 
+case object commaToken extends Token 
+case object notToken extends Token 
 //BinOp tokens
 case object multiplyToken extends Token // *
 case object divideToken extends Token // /
@@ -67,7 +67,6 @@ case object monitorToken extends Token
 case object returnToken extends Token
 case object waitToken extends Token
 
-
 case class IdentifierToken(name: String) extends Token
 case class IntegerLiteralToken(value: Int) extends Token
 case class StringLiteralToken(value: String) extends Token
@@ -76,47 +75,17 @@ object Tokenizer{
 
   val leftBracesID: Regex = "\\{".r
 
-  // basically just copied the example Dewey gave us
-  // more developed version below, just putting this here for reference
-  def prettyString(token: Token): String = {
-    val id = IdentifierToken("foo")
-    println(id.name)
-
-    token match {
-      case leftParenToken => "("
-      case rightParenToken => ")"
-      case IdentifierToken(name) => name
-      case IntegerLiteralToken(value) => value.toString
-    }
-  }
-
-
-  /*
-  we could instead of splitting the input string, we could
-  work through it as a list of characters, processing one character at a time.
-  This would allow us to handle multi-character tokens more easily.
-  The current setup probably won't work well for comments and string 
-  literals because we're stripping whitespace.
- */
-
   // This is not done
           // ToDo: Implement Reserved words
           // ToDo: Double Check Symbols and Operators with grammar - DONE
           // ToDo: Double Check \" in string literal Regex
           // ToDo: Double Check String Literal, Identifier, Integer Literal regex.
   def main(args: Array[String]): Unit = {
-    val tokens = lexer("5+7")
+    val tokens = lexer("event hello {}")
     print(tokens)
   }
 
   //from 430 github
-  /* public static final Map<String, Token> RESERVED_WORDS =
-        new HashMap<String, Token>() {{
-            // put("return", new ReturnToken());
-            put("let", new LetToken());
-        }};
-   */
-
    /* private Token tryTokenizeIdentifierOrReservedWord() {
         if (Character.isLetter(input.charAt(pos))) {
             final StringBuffer read = new StringBuffer();
@@ -152,7 +121,6 @@ object Tokenizer{
       "-=" -> minusEqualsToken,
       ";" -> semicolonToken,
       "," -> commaToken,
-      "!" -> notToken,
       "*" -> multiplyToken,
       "/" -> divideToken,
       "%" -> moduloToken,
@@ -167,43 +135,23 @@ object Tokenizer{
       "==" -> doubleEqualsToken,
       "="  -> singleEqualsToken,
       "!=" -> notEqualsToken,
-      "^" -> upArrowToken,
-      "&&" -> logicalAndToken
+      "!" -> notToken,
+      "&&" -> logicalAndToken,
+      ")" -> rightParenToken,
+      "(" -> leftParenToken,
+      "}" -> rightBracesToken,
+      "{" -> leftBracesToken,
+      "||" -> logicalOrToken,
+      "*=" -> mulEqualsToken,
+      "/=" -> divEqualsToken,
+      "%=" -> modEqualsToken,
+      "<<=" -> doubleLeftArrowEqualsToken,
+      ">>=" -> doubleRightArrowEqualsToken,
+      "^=" -> upArrowEqualsToken,
+      "^" -> upArrowToken
     )
 
-    def tokenize(chars:List[Char], currentToken: String, tokens: List[Token]):List[Token] = chars match {
-      case Nil if currentToken.nonEmpty => tokens :+ tokenFromCurrent(currentToken)
-      case Nil => tokens
-      case head :: tail =>
-        val newToken = currentToken + head
-        // Add condition here to check for reserved words
-        if(validTokens.exists(_._1 == newToken)) {
-          tokenize(tail, "", tokens :+ validTokens.find(_._1 == newToken).get._2)
-        } else if (currentToken.nonEmpty && head==' ' ) {
-          tokenize(tail, "", tokens :+ tokenFromCurrent(currentToken))
-        } else if (head==' ') {
-          tokenize(tail, "", tokens)
-        } else{
-          tokenize(tail, newToken, tokens)
-        }
-    }
-
-    def tokenFromCurrent(current: String): Token = current match {
-      case "" => null //Ignore empty tokens
-      case s if s.matches("[a-zA-Z][a-zA-Z0-9]*") => IdentifierToken(s)
-      case s if s.matches("[0-9]+") => IntegerLiteralToken(s.toInt)
-      case s if s.matches("//.*") || s.matches("/\\*.*\\*/") => null //This ignores comments
-      case s if s.matches("\"[a-zA-Z0-9]*\"") => StringLiteralToken(s) // Needs to start with " / needs to also account for backslash
-      case _ => throw new IllegalArgumentException(s"Unrecognized token: $current")
-    }
-
-    tokenize(input.toList, "", List.empty).filter(_ != null) // Filters out null
-  }
-
-
-
-  // Creating a reserved words map
-  var ReserveWords = scala.collection.mutable.Map[String, Token]()
+    var ReserveWords = scala.collection.mutable.Map[String, Token]()
     ReserveWords += ("actor", actorToken)
     ReserveWords += ("on", onToken)
     ReserveWords += ("statemachine", statemachineToken)
@@ -234,8 +182,34 @@ object Tokenizer{
     ReserveWords += ("return", returnToken)
     ReserveWords += ("wait", waitToken)
 
+    def tokenize(chars:List[Char], currentToken: String, tokens: List[Token]):List[Token] = chars match {
+      case Nil if currentToken.nonEmpty => tokens :+ tokenFromCurrent(currentToken)
+      case Nil => tokens
+      case head :: tail =>
+        val newToken = currentToken + head
+        // Add condition here to check for reserved words
+        if(validTokens.exists(_._1 == newToken)) {
+          tokenize(tail, "", tokens :+ validTokens.find(_._1 == newToken).get._2)
+        } else if (currentToken.nonEmpty && head==' ' ) {
+          tokenize(tail, "", tokens :+ tokenFromCurrent(currentToken))
+        } else if (head==' ') {
+          tokenize(tail, "", tokens)
+        } else{
+          tokenize(tail, newToken, tokens)
+        }
+    }
 
+    def tokenFromCurrent(current: String): Token = current match {
+      case "" => null //Ignore empty tokens
+      case s if s.matches("[a-zA-Z][a-zA-Z0-9]*") => IdentifierToken(s)
+      case s if s.matches("[0-9]+") => IntegerLiteralToken(s.toInt)
+      case s if s.matches("//.*") || s.matches("/\\*.*\\*/") => null //This ignores comments
+      case s if s.matches("\"[a-zA-Z0-9]*\"") => StringLiteralToken(s) // Needs to start with " / needs to also account for backslash
+      case _ => throw new IllegalArgumentException(s"Unrecognized token: $current")
+    }
 
+    tokenize(input.toList, "", List.empty).filter(_ != null) // Filters out null
+  }
 
-} // END OF MAIN
+} // End of object Tokenizer
 
