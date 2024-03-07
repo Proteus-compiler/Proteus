@@ -73,42 +73,14 @@ case class StringLiteralToken(value: String) extends Token
 
 object Tokenizer{
 
-  val leftBracesID: Regex = "\\{".r
-
   // This is not done
           // ToDo: Implement Reserved words
-          // ToDo: Double Check Symbols and Operators with grammar - DONE
           // ToDo: Double Check \" in string literal Regex
           // ToDo: Double Check String Literal, Identifier, Integer Literal regex.
   def main(args: Array[String]): Unit = {
     val tokens = lexer("event hello {}")
     print(tokens)
   }
-
-  //from 430 github
-   /* private Token tryTokenizeIdentifierOrReservedWord() {
-        if (Character.isLetter(input.charAt(pos))) {
-            final StringBuffer read = new StringBuffer();
-            read.append(input.charAt(pos));
-            pos++;
-            while (pos < input.length() &&
-                   Character.isLetterOrDigit(input.charAt(pos))) {
-                read.append(input.charAt(pos));
-                pos++;
-            }
-            final String asString = read.toString();
-            Token reservedWord = RESERVED_WORDS.get(asString);
-            if (reservedWord != null) {
-                return reservedWord;
-            } else {
-                return new IdentifierToken(asString);
-            }
-        } else {
-            return null;
-        }
-    }
-   */
-
 
   private def lexer(input:String): List[Token] = {
     val validTokens = List(
@@ -133,7 +105,6 @@ object Tokenizer{
       "<=" -> leftArrowEqualsToken,
       ">=" -> rightArrowEqualsToken,
       "==" -> doubleEqualsToken,
-      "="  -> singleEqualsToken,
       "!=" -> notEqualsToken,
       "!" -> notToken,
       "&&" -> logicalAndToken,
@@ -148,7 +119,8 @@ object Tokenizer{
       "<<=" -> doubleLeftArrowEqualsToken,
       ">>=" -> doubleRightArrowEqualsToken,
       "^=" -> upArrowEqualsToken,
-      "^" -> upArrowToken
+      "^" -> upArrowToken,
+      "="  -> singleEqualsToken
     )
 
     var ReserveWords = scala.collection.mutable.Map[String, Token]()
@@ -199,6 +171,7 @@ object Tokenizer{
         }
     }
 
+    
     def tokenFromCurrent(current: String): Token = current match {
       case "" => null //Ignore empty tokens
       case s if s.matches("[a-zA-Z][a-zA-Z0-9]*") => IdentifierToken(s)
