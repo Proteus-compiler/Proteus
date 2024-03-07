@@ -1,5 +1,3 @@
-import scala.util.matching.Regex
-import scala.collection.mutable.ListBuffer
 sealed trait Token
 
 // Symbol tokens
@@ -160,6 +158,7 @@ object Tokenizer{
       case head :: tail =>
         val newToken = currentToken + head
         // Add condition here to check for reserved words
+        if()
         if(validTokens.exists(_._1 == newToken)) {
           tokenize(tail, "", tokens :+ validTokens.find(_._1 == newToken).get._2)
         } else if (currentToken.nonEmpty && head==' ' ) {
