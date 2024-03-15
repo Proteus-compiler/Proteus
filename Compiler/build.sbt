@@ -7,5 +7,7 @@ lazy val root = (project in file("."))
     name := "Compiler"
   )
 
-libraryDependencies += "junit" % "junit" % "4.13.2" % "test"
-libraryDependencies += "com.novocode" % "junit-interface" % "0.11" % "test"
+libraryDependencies += "org.scala-lang.modules" % "scala-xml" % "2.2.0"
+libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.11" % Test
+ThisBuild / libraryDependencySchemes += "org.scala-lang.modules" %% "scala-xml" % VersionScheme.Always
+coverageEnabled := true

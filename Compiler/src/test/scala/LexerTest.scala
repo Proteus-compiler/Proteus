@@ -1,18 +1,11 @@
-import org.junit.Assert._
-import org.junit.Test
-import src.main.scala.*
-class LexerTest {
-
-  @Test
-  def helloTest(): Unit = {
-    val test = lexer("hello")
-    val token = List[Tokens](IdentifierToken(hello))
-    assertEquals( test, token )
+import org.scalatest.funsuite.AnyFunSuite
+class LexerTest extends AnyFunSuite {
+  
+  test("Hello World"){
+    assert(Tokenizer.lexer("event hello {}") === List(
+      IdentifierToken("event"),
+      IdentifierToken("hello"),
+      leftBracesToken,
+      rightBracesToken))
   }
-
-  @Test
-  def subtractionTest(): Unit = {
-    assertEquals(2, 5 - 3)
-  }
-
 }

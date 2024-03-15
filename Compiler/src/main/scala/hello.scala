@@ -1,3 +1,5 @@
+import scala.annotation.tailrec
+
 sealed trait Token
 
 // Symbol tokens
@@ -80,7 +82,32 @@ object Tokenizer{
     print(tokens)
   }
 
-  private def lexer(input:String): List[Token] = {
+  //from 430 github
+   /* private Token tryTokenizeIdentifierOrReservedWord() {
+        if (Character.isLetter(input.charAt(pos))) {
+            final StringBuffer read = new StringBuffer();
+            read.append(input.charAt(pos));
+            pos++;
+            while (pos < input.length() &&
+                   Character.isLetterOrDigit(input.charAt(pos))) {
+                read.append(input.charAt(pos));
+                pos++;
+            }
+            final String asString = read.toString();
+            Token reservedWord = RESERVED_WORDS.get(asString);
+            if (reservedWord != null) {
+                return reservedWord;
+            } else {
+                return new IdentifierToken(asString);
+            }
+        } else {
+            return null;
+        }
+    }
+   */
+
+
+  def lexer(input:String): List[Token] = {
     val validTokens = List(
       "{" -> leftBracesToken,
       "}" -> rightBracesToken,
@@ -152,13 +179,14 @@ object Tokenizer{
     ReserveWords += ("return", returnToken)
     ReserveWords += ("wait", waitToken)
 
+    @tailrec
     def tokenize(chars:List[Char], currentToken: String, tokens: List[Token]):List[Token] = chars match {
       case Nil if currentToken.nonEmpty => tokens :+ tokenFromCurrent(currentToken)
       case Nil => tokens
       case head :: tail =>
         val newToken = currentToken + head
         // Add condition here to check for reserved words
-        if()
+
         if(validTokens.exists(_._1 == newToken)) {
           tokenize(tail, "", tokens :+ validTokens.find(_._1 == newToken).get._2)
         } else if (currentToken.nonEmpty && head==' ' ) {
