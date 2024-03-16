@@ -1,8 +1,9 @@
-import org.scalatest.funsuite.AnyFunSuite
-class LexerTest extends AnyFunSuite {
+import munit.Clue.generate
+
+class LexerTest extends munit.FunSuite {
   
   test("Hello World"){
-    assert(Tokenizer.lexer("event hello {}") === List(
+    assertEquals(Tokenizer.lexer("event hello {}") , List(
       IdentifierToken("event"),
       IdentifierToken("hello"),
       leftBracesToken,
