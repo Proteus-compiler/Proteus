@@ -108,6 +108,12 @@ object Tokenizer{
 
   def lexer(input:String): List[Token] = {
 
+    /** ReservedWords
+     *  @author Morgan Barrett
+     *  Immutable Map that contains
+     *  Key -> String
+     *  Value -> Token
+     * */
     val ReservedWords: Map[String, Token] = Map(
       "actor" -> actorToken,
       "on" -> onToken,
@@ -160,8 +166,10 @@ object Tokenizer{
     def tokenizeSymbol(input: List[Char]): Option[(Token, List[Char])] = {
       input match {
         //TODO: Account for comments
-        //case '/' :: '/' ::          tail =>
+        //case '/' :: '*' :: '*' ::   tail =>
         //case '/' :: '*' ::          tail =>
+        //case '/' :: '/' ::          tail =>
+
         case '^' :: '=' ::          tail => Some(upArrowEqualsToken, tail) //'^='
         case '^' ::                 tail => Some(upArrowToken, tail) //'^'
 
