@@ -106,110 +106,137 @@ object Tokenizer{
     }
    */
 
-
   def lexer(input:String): List[Token] = {
-    val validTokens = List(
-      "{" -> leftBracesToken,
-      "}" -> rightBracesToken,
-      "(" -> leftParenToken,
-      ")" -> rightParenToken,
-      "=" -> singleEqualsToken,
-      "+=" -> plusEqualsToken,
-      "-=" -> minusEqualsToken,
-      ";" -> semicolonToken,
-      "," -> commaToken,
-      "*" -> multiplyToken,
-      "/" -> divideToken,
-      "%" -> moduloToken,
-      "+" -> plusToken,
-      "-" -> minusToken,
-      "<<" -> doubleLeftArrowToken,
-      ">>" -> doubleRightArrowToken,
-      "<" -> leftArrowToken,
-      ">" -> rightArrowToken,
-      "<=" -> leftArrowEqualsToken,
-      ">=" -> rightArrowEqualsToken,
-      "==" -> doubleEqualsToken,
-      "!=" -> notEqualsToken,
-      "!" -> notToken,
-      "&&" -> logicalAndToken,
-      ")" -> rightParenToken,
-      "(" -> leftParenToken,
-      "}" -> rightBracesToken,
-      "{" -> leftBracesToken,
-      "||" -> logicalOrToken,
-      "*=" -> mulEqualsToken,
-      "/=" -> divEqualsToken,
-      "%=" -> modEqualsToken,
-      "<<=" -> doubleLeftArrowEqualsToken,
-      ">>=" -> doubleRightArrowEqualsToken,
-      "^=" -> upArrowEqualsToken,
-      "^" -> upArrowToken,
-      "="  -> singleEqualsToken
+
+    val ReservedWords: Map[String, Token] = Map(
+      "actor" -> actorToken,
+      "on" -> onToken,
+      "statemachine" -> statemachineToken,
+      "state" -> stateToken,
+      "entry" -> entryToken,
+      "exit" -> exitToken,
+      "func" -> funcToken,
+      "initial" -> initialToken,
+      "event" -> eventToken,
+      "if" -> ifToken,
+      "while" -> whileToken,
+      "send" -> sendToken,
+      "print" -> printToken,
+      "println" -> printlnToken,
+      "int" -> intToken,
+      "string" -> stringToken,
+      "bool" -> boolToken,
+      "actorname" -> actornameToken,
+      "statename" -> statenameToken,
+      "eventname" -> eventnameToken,
+      "go" -> goToken,
+      "goif" -> goifToken,
+      "else" -> elseToken,
+      "const" -> constToken,
+      "true" -> trueToken,
+      "false" -> falseToken,
+      "monitor" -> monitorToken,
+      "return" -> returnToken,
+      "wait" -> waitToken
     )
 
-    var ReserveWords = scala.collection.mutable.Map[String, Token]()
-    ReserveWords += ("actor", actorToken)
-    ReserveWords += ("on", onToken)
-    ReserveWords += ("statemachine", statemachineToken)
-    ReserveWords += ("state", stateToken)
-    ReserveWords += ("entry", entryToken)
-    ReserveWords += ("exit", exitToken)
-    ReserveWords += ("func", funcToken)
-    ReserveWords += ("initial", initialToken)
-    ReserveWords += ("event", eventToken)
-    ReserveWords += ("if", ifToken)
-    ReserveWords += ("while", whileToken)
-    ReserveWords += ("send", sendToken)
-    ReserveWords += ("print", printToken)
-    ReserveWords += ("println", printlnToken)
-    ReserveWords += ("int", intToken)
-    ReserveWords += ("string", stringToken)
-    ReserveWords += ("bool", boolToken)
-    ReserveWords += ("actorname", actornameToken)
-    ReserveWords += ("statename", statenameToken)
-    ReserveWords += ("eventname", eventnameToken)
-    ReserveWords += ("go", goToken)
-    ReserveWords += ("goif", goifToken)
-    ReserveWords += ("else", elseToken)
-    ReserveWords += ("const", constToken)
-    ReserveWords += ("true", trueToken)
-    ReserveWords += ("false", falseToken)
-    ReserveWords += ("monitor", monitorToken)
-    ReserveWords += ("return", returnToken)
-    ReserveWords += ("wait", waitToken)
-
     @tailrec
-    def tokenize(chars:List[Char], currentToken: String, tokens: List[Token]):List[Token] = chars match {
-      case Nil if currentToken.nonEmpty => tokens :+ tokenFromCurrent(currentToken)
-      case Nil => tokens
-      case head :: tail =>
-        val newToken = currentToken + head
-        // Add condition here to check for reserved words
+    def tokenize(input: List[Char], accum: List[Token]): List[Token] = {
+      if (input.isEmpty) accum
+      else {
+        val (token, tail) = readToken(input)
+        tokenize(tail, accum :+ token)
+      }
+    }
 
-        if(validTokens.exists(_._1 == newToken)) {
-          tokenize(tail, "", tokens :+ validTokens.find(_._1 == newToken).get._2)
-        } else if (currentToken.nonEmpty && head==' ' ) {
-          tokenize(tail, "", tokens :+ tokenFromCurrent(currentToken))
-        } else if (head==' ') {
-          tokenize(tail, "", tokens)
-        } else{
-          tokenize(tail, newToken, tokens)
+    def readToken(input: List[Char]): (Token, List[Char]) = {
+      val (_, inputWithoutLeadingSpaces) = takeWhileAndGetAfter(input)(_.isWhitespace)
+      tokenizeSymbol(inputWithoutLeadingSpaces)
+        .orElse(tokenizeInteger(inputWithoutLeadingSpaces))
+        .orElse(tokenizeWord(inputWithoutLeadingSpaces))
+        .getOrElse(throw new IllegalArgumentException("Invalid Token"))
+    }
+
+    def tokenizeSymbol(input: List[Char]): Option[(Token, List[Char])] = {
+      input match {
+        //TODO: Account for comments
+        //case '/' :: '/' ::          tail =>
+        //case '/' :: '*' ::          tail =>
+        case '^' :: '=' ::          tail => Some(upArrowEqualsToken, tail) //'^='
+        case '^' ::                 tail => Some(upArrowToken, tail) //'^'
+
+        case '+' :: '=' ::          tail => Some(plusEqualsToken, tail) //'+='
+        case '+' ::                 tail => Some(plusToken, tail) // '+'
+
+        case '-' :: '=' ::          tail => Some(minusEqualsToken, tail) //'-='
+        case '-' ::                 tail => Some(minusToken, tail) // '-'
+
+        case '<' :: '<' :: '=' ::   tail => Some(doubleLeftArrowEqualsToken, tail) // '<<='
+        case '<' :: '<' ::          tail => Some(doubleLeftArrowToken, tail) //'<<'
+        case '<' :: '=' ::          tail => Some(leftArrowEqualsToken, tail) //'<='
+        case '<' ::                 tail => Some(leftArrowToken, tail) //'<'
+
+        case '>' :: '>' :: '=' ::   tail => Some(doubleRightArrowEqualsToken, tail) //'>>='
+        case '>' :: '>' ::          tail => Some(doubleRightArrowToken, tail) //'>>'
+        case '>' :: '=' ::          tail => Some(rightArrowEqualsToken, tail) //'>='
+        case '>' ::                 tail => Some(rightArrowToken, tail) //'>'
+
+        case '!' :: '=' ::          tail => Some(notEqualsToken, tail) //'!='
+        case '!' ::                 tail => Some(notToken, tail) //'!'
+        case '&' :: '&' ::          tail => Some(logicalAndToken, tail) //'&&'
+        case '|' :: '|' ::          tail => Some(logicalOrToken, tail) //'||'
+
+        case '*' :: '=' ::          tail => Some(mulEqualsToken, tail) //'*='
+        case '*' ::                 tail => Some(multiplyToken, tail) //'*'
+
+        case '/' :: '=' ::          tail => Some(divEqualsToken, tail) //'/='
+        case '/' ::                 tail => Some(divideToken, tail) //'/'
+
+        case '%' :: '=' ::          tail => Some(modEqualsToken, tail) //'%='
+        case '%' ::                 tail => Some(moduloToken, tail) //'%'
+
+        case '=' :: '=' ::          tail => Some(doubleEqualsToken, tail) //'=='
+        case '=' ::                 tail => Some(singleEqualsToken, tail) //'='
+
+        //TODO: Insert missing symbols here
+
+        case ';' ::                 tail => Some(semicolonToken, tail) //';'
+        case ',' :: tail => Some(commaToken, tail) //','
+        case '(' :: tail => Some(leftParenToken, tail) //'('
+        case ')' :: tail => Some(rightParenToken, tail) //')'
+        case '{' :: tail => Some(leftBracesToken, tail) //'{'
+        case '}' :: tail => Some(rightBracesToken, tail) //'}'
+        case _ => None
+      }
+    }
+
+    def tokenizeInteger(input: List[Char]): Option[(IntegerLiteralToken, List[Char])] = {
+      val (num, tail) = takeWhileAndGetAfter(input)(_.isDigit)
+      if (num.nonEmpty) {
+        tail match {
+          case symbl :: other if symbl.isLetter => throw IllegalArgumentException("Invalid Token")
+          case _ => Some(IntegerLiteralToken(num.mkString.toInt), tail)
         }
+      } else None
     }
 
-
-    def tokenFromCurrent(current: String): Token = current match {
-      case "" => null //Ignore empty tokens
-      case s if s.matches("[a-zA-Z][a-zA-Z0-9]*") => IdentifierToken(s)
-      case s if s.matches("[0-9]+") => IntegerLiteralToken(s.toInt)
-      case s if s.matches("//.*") || s.matches("/\\*.*\\*/") => null //This ignores comments
-      case s if s.matches("\"[a-zA-Z0-9]*\"") => StringLiteralToken(s) // Needs to start with " / needs to also account for backslash
-      case _ => throw new IllegalArgumentException(s"Unrecognized token: $current")
+    def tokenizeWord(input: List[Char]): Option[(Token, List[Char])] = {
+      input match {
+        case ch :: tail if ch.isLetter =>
+          val (c, tail) = takeWhileAndGetAfter(input)(_.isLetterOrDigit)
+          val word = c.mkString
+          val token = ReservedWords.getOrElse(word, IdentifierToken(word))
+          Some(token, tail)
+        case _ => None
+      }
     }
 
-    tokenize(input.toList, "", List.empty).filter(_ != null) // Filters out null
+    def takeWhileAndGetAfter[A](input: List[A])(check: (A) => Boolean): (List[A], List[A]) = {
+      val before = input.takeWhile(check)
+      (before, input.drop(before.size))
+    }
+
+    tokenize(input.toList, List.empty[Token])
   }
-
 } // End of object Tokenizer
 
