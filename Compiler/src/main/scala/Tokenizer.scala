@@ -7,12 +7,12 @@ case object leftBracesToken extends Token
 case object rightBracesToken extends Token
 case object leftParenToken extends Token
 case object rightParenToken extends Token
-case object singleEqualsToken extends Token 
-case object plusEqualsToken extends Token 
-case object minusEqualsToken extends Token 
-case object semicolonToken extends Token 
-case object commaToken extends Token 
-case object notToken extends Token 
+case object singleEqualsToken extends Token
+case object plusEqualsToken extends Token
+case object minusEqualsToken extends Token
+case object semicolonToken extends Token
+case object commaToken extends Token
+case object notToken extends Token
 //BinOp tokens
 case object multiplyToken extends Token // *
 case object divideToken extends Token // /
@@ -198,7 +198,7 @@ object Tokenizer{
         }
     }
 
-    
+
     def tokenFromCurrent(current: String): Token = current match {
       case "" => null //Ignore empty tokens
       case s if s.matches("[a-zA-Z][a-zA-Z0-9]*") => IdentifierToken(s)
