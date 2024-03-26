@@ -162,7 +162,7 @@ object Tokenizer{
         tokenize(tail, accum :+ token)
       }
     }
-
+    //this is a comment \n int num = 7
     def readToken(input: List[Char]): (Token, List[Char]) = {
       val (_, inputWithoutLeadingSpaces) = takeWhileAndGetAfter(input)(_.isWhitespace)
       tokenizeSymbol(inputWithoutLeadingSpaces)
@@ -175,6 +175,7 @@ object Tokenizer{
     def tokenizeSymbol(input: List[Char]): Option[(Token, List[Char])] = {
       input match {
         //TODO: Account for comments
+        case '\n' ::                tail => tokenizeSymbol(tail)
         //case '/' :: '*' :: '*' ::   tail =>
         //case '/' :: '*' ::          tail =>
         case '/' :: '/' ::          tail =>
@@ -252,7 +253,8 @@ object Tokenizer{
 
     def takeWhileAndGetAfter[A](input: List[A])(check: (A) => Boolean): (List[A], List[A]) = {
       val before = input.takeWhile(check)
-      (before, input.drop(before.size))
+      val after = input.drop(before.size)
+      (before, after)
     }
 
     tokenize(input.toList, List.empty[Token])
