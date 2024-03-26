@@ -73,12 +73,8 @@ case class StringLiteralToken(value: String) extends Token
 
 object Tokenizer{
 
-  // This is not done
-          // ToDo: Implement Reserved words
-          // ToDo: Double Check \" in string literal Regex
-          // ToDo: Double Check String Literal, Identifier, Integer Literal regex.
   def main(args: Array[String]): Unit = {
-    val tokens = lexer("event hello {}")
+    val tokens = lexer("//comment")
     print(tokens)
   }
 
@@ -175,12 +171,15 @@ object Tokenizer{
         .getOrElse(throw new IllegalArgumentException("Invalid Token"))
     }
 
+    @tailrec
     def tokenizeSymbol(input: List[Char]): Option[(Token, List[Char])] = {
       input match {
         //TODO: Account for comments
         //case '/' :: '*' :: '*' ::   tail =>
         //case '/' :: '*' ::          tail =>
-        //case '/' :: '/' ::          tail =>
+        case '/' :: '/' ::          tail =>
+                                      val (_, afterComments) = takeWhileAndGetAfter(tail)(ch => ch != '\n')
+                                      tokenizeSymbol(afterComments)
 
         case '/' :: '=' ::          tail => Some(divEqualsToken, tail) //'/='
         case '/' ::                 tail => Some(divideToken, tail) //'/'

@@ -19,7 +19,25 @@ class LexerTest extends munit.FunSuite {
     ))
   }
 
+  test("integer"){
+    assertEquals(Tokenizer.lexer("int num = 7"),List(
+      intToken,
+      IdentifierToken("num"),
+      singleEqualsToken,
+      IntegerLiteralToken(7)
+    ))
+  }
+
   test("comments"){
     assertEquals(Tokenizer.lexer("//This is a comment"), List())
+  }
+
+  test("comments with newline"){
+    assertEquals(Tokenizer.lexer("//This is a comment\n int num = 7"), List(
+      intToken,
+      IdentifierToken("num"),
+      singleEqualsToken,
+      IntegerLiteralToken(7)
+    ))
   }
 }
