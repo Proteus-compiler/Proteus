@@ -113,7 +113,7 @@ object Tokenizer{
      *  Immutable Map that contains
      *  Key -> String
      *  Value -> Token
-     * */
+     **/
     val ReservedWords: Map[String, Token] = Map(
       "actor" -> actorToken,
       "on" -> onToken,
@@ -146,6 +146,18 @@ object Tokenizer{
       "wait" -> waitToken
     )
 
+    /** tokenize
+     * @param input: List[Char]
+     * @param accum: List[Token]
+     * @return List[Token]
+     * Takes input, a List of Characters, and checks if the List is empty.
+     *
+     * If the List is NOT empty, the function readToken is called, sending the List of Characters (input)
+     * as a parameter. A Token and a new List of characters is returned.
+     * The Token is then added to the accum List of Tokens, and tokenize is recursively called.
+     *
+     * If the List is empty, accum, the List of Tokens, is returned.
+     * */
     @tailrec
     def tokenize(input: List[Char], accum: List[Token]): List[Token] = {
       if (input.isEmpty) accum
@@ -169,6 +181,9 @@ object Tokenizer{
         //case '/' :: '*' :: '*' ::   tail =>
         //case '/' :: '*' ::          tail =>
         //case '/' :: '/' ::          tail =>
+
+        case '/' :: '=' ::          tail => Some(divEqualsToken, tail) //'/='
+        case '/' ::                 tail => Some(divideToken, tail) //'/'
 
         case '^' :: '=' ::          tail => Some(upArrowEqualsToken, tail) //'^='
         case '^' ::                 tail => Some(upArrowToken, tail) //'^'
@@ -197,24 +212,21 @@ object Tokenizer{
         case '*' :: '=' ::          tail => Some(mulEqualsToken, tail) //'*='
         case '*' ::                 tail => Some(multiplyToken, tail) //'*'
 
-        case '/' :: '=' ::          tail => Some(divEqualsToken, tail) //'/='
-        case '/' ::                 tail => Some(divideToken, tail) //'/'
-
         case '%' :: '=' ::          tail => Some(modEqualsToken, tail) //'%='
         case '%' ::                 tail => Some(moduloToken, tail) //'%'
 
         case '=' :: '=' ::          tail => Some(doubleEqualsToken, tail) //'=='
         case '=' ::                 tail => Some(singleEqualsToken, tail) //'='
 
-        //TODO: Insert missing symbols here
+        //TODO: Insert missing symbols here (only if there are any)
 
         case ';' ::                 tail => Some(semicolonToken, tail) //';'
-        case ',' :: tail => Some(commaToken, tail) //','
-        case '(' :: tail => Some(leftParenToken, tail) //'('
-        case ')' :: tail => Some(rightParenToken, tail) //')'
-        case '{' :: tail => Some(leftBracesToken, tail) //'{'
-        case '}' :: tail => Some(rightBracesToken, tail) //'}'
-        case _ => None
+        case ',' ::                 tail => Some(commaToken, tail) //','
+        case '(' ::                 tail => Some(leftParenToken, tail) //'('
+        case ')' ::                 tail => Some(rightParenToken, tail) //')'
+        case '{' ::                 tail => Some(leftBracesToken, tail) //'{'
+        case '}' ::                 tail => Some(rightBracesToken, tail) //'}'
+        case _                           => None
       }
     }
 
