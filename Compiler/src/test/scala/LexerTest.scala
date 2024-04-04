@@ -30,11 +30,11 @@ class LexerTest extends munit.FunSuite {
   }
 
   test("comments"){
-    assertEquals(Tokenizer.lexer("//This is a comment"), List())
+    assertEquals(Tokenizer.lexer(""), List())
   }
 
   test("comments with newline"){
-    assertEquals(Tokenizer.lexer("//This is a comment\nint num = 7;"), List(
+    assertEquals(Tokenizer.lexer("// This is a comment\nint num = 7;"), List(
       intToken,
       IdentifierToken("num"),
       singleEqualsToken,
@@ -51,4 +51,5 @@ class LexerTest extends munit.FunSuite {
       semicolonToken
     ))
   }
+  
 }

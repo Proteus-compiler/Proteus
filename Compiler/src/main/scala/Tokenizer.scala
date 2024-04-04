@@ -162,26 +162,17 @@ object Tokenizer{
         tokenize(tail, accum :+ token)
       }
     }
-    //this is a comment \n int num = 7
+    
     def readToken(input: List[Char]): (Token, List[Char]) = {
-      val (_, inputWithoutLeadingSpaces) = takeWhileAndGetAfter(input)(_.isWhitespace)
+      val inputWithoutLeadingSpaces = skipWhitespaceAndComments(input)
       tokenizeSymbol(inputWithoutLeadingSpaces)
         .orElse(tokenizeInteger(inputWithoutLeadingSpaces))
         .orElse(tokenizeWord(inputWithoutLeadingSpaces))
         .getOrElse(throw new IllegalArgumentException("Invalid Token"))
     }
-
-    @tailrec
+    
     def tokenizeSymbol(input: List[Char]): Option[(Token, List[Char])] = {
       input match {
-        //TODO: Account for comments
-        case '\n' ::                tail => tokenizeSymbol(tail)
-        //case '/' :: '*' :: '*' ::   tail =>
-        //case '/' :: '*' ::          tail =>
-        case '/' :: '/' ::          tail =>
-                                      val (_, afterComments) = takeWhileAndGetAfter(tail)(ch => ch != '\n')
-                                      tokenizeSymbol(afterComments)
-
         case '/' :: '=' ::          tail => Some(divEqualsToken, tail) //'/='
         case '/' ::                 tail => Some(divideToken, tail) //'/'
 
@@ -257,7 +248,19 @@ object Tokenizer{
       (before, after)
     }
 
+    @tailrec
+    def skipWhitespaceAndComments(ch: List[Char]): List[Char] = {
+      ch match {
+        case '\n' ::       tail => skipWhitespaceAndComments(tail)
+        case '/' :: '/' :: tail => skipWhitespaceAndComments(tail.dropWhile(_ != '\n'))
+        case c :: tail if c.isWhitespace => skipWhitespaceAndComments(tail)
+        case _ => ch
+      }
+    }
+    
+
     tokenize(input.toList, List.empty[Token])
   }
+  
 } // End of object Tokenizer
 
