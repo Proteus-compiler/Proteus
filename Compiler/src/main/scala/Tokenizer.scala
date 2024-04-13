@@ -73,34 +73,14 @@ case class StringLiteralToken(value: String) extends Token
 
 object Tokenizer{
 
+  //TODO: Need to implement FileReader and test comments. Ex:
+  // //This is a comment
+  // int num = 7;
+  //TODO: We need newLine Tokens
   def main(args: Array[String]): Unit = {
     val tokens = lexer("//comment")
     print(tokens)
   }
-
-  //from 430 github
-   /* private Token tryTokenizeIdentifierOrReservedWord() {
-        if (Character.isLetter(input.charAt(pos))) {
-            final StringBuffer read = new StringBuffer();
-            read.append(input.charAt(pos));
-            pos++;
-            while (pos < input.length() &&
-                   Character.isLetterOrDigit(input.charAt(pos))) {
-                read.append(input.charAt(pos));
-                pos++;
-            }
-            final String asString = read.toString();
-            Token reservedWord = RESERVED_WORDS.get(asString);
-            if (reservedWord != null) {
-                return reservedWord;
-            } else {
-                return new IdentifierToken(asString);
-            }
-        } else {
-            return null;
-        }
-    }
-   */
 
   def lexer(input:String): List[Token] = {
 
@@ -156,9 +136,10 @@ object Tokenizer{
      * */
     @tailrec
     def tokenize(input: List[Char], accum: List[Token]): List[Token] = {
-      if (input.isEmpty) accum
+      val currentInput = skipWhitespaceAndComments(input)
+      if (currentInput.isEmpty) accum
       else {
-        val (token, tail) = readToken(input)
+        val (token, tail) = readToken(currentInput)
         tokenize(tail, accum :+ token)
       }
     }
@@ -233,8 +214,8 @@ object Tokenizer{
 
     def tokenizeWord(input: List[Char]): Option[(Token, List[Char])] = {
       input match {
-        case ch :: tail if ch.isLetter =>
-          val (c, tail) = takeWhileAndGetAfter(input)(_.isLetterOrDigit)
+        case ch :: tail if ch.isLetter || ch == '_' =>
+          val (c, tail) = takeWhileAndGetAfter(input)(a => a.isLetterOrDigit || a == '_')
           val word = c.mkString
           val token = ReservedWords.getOrElse(word, IdentifierToken(word))
           Some(token, tail)

@@ -51,5 +51,29 @@ class LexerTest extends munit.FunSuite {
       semicolonToken
     ))
   }
-  
+  test("empty string"){
+    assertEquals(Tokenizer.lexer("int "), List(
+      intToken
+    ))
+  }
+
+  test("underscore") {
+    assertEquals(Tokenizer.lexer("int _name_number = 7"), List(
+      intToken,
+      IdentifierToken("_name_number"),
+      singleEqualsToken,
+      IntegerLiteralToken(7)
+    ))
+  }
+
+
+  test("underscore_1") {
+    assertEquals(Tokenizer.lexer("int _ = 7"), List(
+      intToken,
+      IdentifierToken("_"),
+      singleEqualsToken,
+      IntegerLiteralToken(7)
+    ))
+  }
+
 }
