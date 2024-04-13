@@ -7,9 +7,9 @@ case object leftBracesToken extends Token
 case object rightBracesToken extends Token
 case object leftParenToken extends Token
 case object rightParenToken extends Token
-case object singleEqualsToken extends Token
-case object plusEqualsToken extends Token
-case object minusEqualsToken extends Token
+case object assignToken extends Token
+case object addAssignmentToken extends Token
+case object subtractAssignmentToken extends Token
 case object semicolonToken extends Token
 case object commaToken extends Token
 case object notToken extends Token
@@ -17,25 +17,25 @@ case object notToken extends Token
 case object multiplyToken extends Token // *
 case object divideToken extends Token // /
 case object moduloToken extends Token // %
-case object plusToken extends Token // +
-case object minusToken extends Token // -
-case object doubleLeftArrowToken extends Token // <<
-case object doubleRightArrowToken extends Token // >>
-case object leftArrowToken extends Token // <
-case object rightArrowToken extends Token // >
-case object leftArrowEqualsToken extends Token // <=
-case object rightArrowEqualsToken extends Token // >=
-case object doubleEqualsToken extends Token // ==
-case object notEqualsToken extends Token // !=
-case object upArrowToken extends Token // ^
-case object logicalAndToken extends Token // &&
-case object logicalOrToken extends Token // ||
-case object mulEqualsToken extends Token // *=
-case object divEqualsToken extends Token // /=
-case object modEqualsToken extends Token // %=
-case object doubleLeftArrowEqualsToken extends Token // <<=
-case object doubleRightArrowEqualsToken extends Token // >>=
-case object upArrowEqualsToken extends Token // ^=
+case object addToken extends Token // +
+case object subtractToken extends Token // -
+case object leftShiftToken extends Token // <<
+case object rightShiftToken extends Token // >>
+case object lessThanToken extends Token // <
+case object greaterThanToken extends Token // >
+case object lessThanOrEqualToToken extends Token // <=
+case object greaterThanOrEqualToToken extends Token // >=
+case object equalToToken extends Token // ==
+case object notEqualtoToken extends Token // !=
+case object exclusiveOrToken extends Token // ^
+case object andToken extends Token // &&
+case object orToken extends Token // ||
+case object multiplyAssignmentToken extends Token // *=
+case object divideAssignmentToken extends Token // /=
+case object moduloAssignmentToken extends Token // %=
+case object leftShiftToken extends Token // <<=
+case object rightShiftToken extends Token // >>=
+case object exclusiveOrAssignmentToken extends Token // ^=
 // Reserved word tokens
 case object actorToken extends Token
 case object onToken extends Token
@@ -154,41 +154,41 @@ object Tokenizer{
     
     def tokenizeSymbol(input: List[Char]): Option[(Token, List[Char])] = {
       input match {
-        case '/' :: '=' ::          tail => Some(divEqualsToken, tail) //'/='
+        case '/' :: '=' ::          tail => Some(divideAssignmentToken, tail) //'/='
         case '/' ::                 tail => Some(divideToken, tail) //'/'
 
-        case '^' :: '=' ::          tail => Some(upArrowEqualsToken, tail) //'^='
-        case '^' ::                 tail => Some(upArrowToken, tail) //'^'
+        case '^' :: '=' ::          tail => Some(exclusiveOrAssignmentToken, tail) //'^='
+        case '^' ::                 tail => Some(exclusiveOrToken, tail) //'^'
 
-        case '+' :: '=' ::          tail => Some(plusEqualsToken, tail) //'+='
-        case '+' ::                 tail => Some(plusToken, tail) // '+'
+        case '+' :: '=' ::          tail => Some(addAssignmentToken, tail) //'+='
+        case '+' ::                 tail => Some(addToken, tail) // '+'
 
-        case '-' :: '=' ::          tail => Some(minusEqualsToken, tail) //'-='
-        case '-' ::                 tail => Some(minusToken, tail) // '-'
+        case '-' :: '=' ::          tail => Some(subtractAssignmentToken, tail) //'-='
+        case '-' ::                 tail => Some(subtractToken, tail) // '-'
 
-        case '<' :: '<' :: '=' ::   tail => Some(doubleLeftArrowEqualsToken, tail) // '<<='
-        case '<' :: '<' ::          tail => Some(doubleLeftArrowToken, tail) //'<<'
-        case '<' :: '=' ::          tail => Some(leftArrowEqualsToken, tail) //'<='
-        case '<' ::                 tail => Some(leftArrowToken, tail) //'<'
+        case '<' :: '<' :: '=' ::   tail => Some(leftShiftAssignmentToken, tail) // '<<='
+        case '<' :: '<' ::          tail => Some(leftShiftToken, tail) //'<<'
+        case '<' :: '=' ::          tail => Some(lessThanOrEqualToToken, tail) //'<='
+        case '<' ::                 tail => Some(lessThanToken, tail) //'<'
 
-        case '>' :: '>' :: '=' ::   tail => Some(doubleRightArrowEqualsToken, tail) //'>>='
-        case '>' :: '>' ::          tail => Some(doubleRightArrowToken, tail) //'>>'
-        case '>' :: '=' ::          tail => Some(rightArrowEqualsToken, tail) //'>='
-        case '>' ::                 tail => Some(rightArrowToken, tail) //'>'
+        case '>' :: '>' :: '=' ::   tail => Some(rightShiftAssignmentToken, tail) //'>>='
+        case '>' :: '>' ::          tail => Some(rightShiftToken, tail) //'>>'
+        case '>' :: '=' ::          tail => Some(greaterThanOrEqualToToken, tail) //'>='
+        case '>' ::                 tail => Some(greaterThanToken, tail) //'>'
 
-        case '!' :: '=' ::          tail => Some(notEqualsToken, tail) //'!='
+        case '!' :: '=' ::          tail => Some(notEqualToToken, tail) //'!='
         case '!' ::                 tail => Some(notToken, tail) //'!'
-        case '&' :: '&' ::          tail => Some(logicalAndToken, tail) //'&&'
-        case '|' :: '|' ::          tail => Some(logicalOrToken, tail) //'||'
+        case '&' :: '&' ::          tail => Some(andToken, tail) //'&&'
+        case '|' :: '|' ::          tail => Some(orToken, tail) //'||'
 
-        case '*' :: '=' ::          tail => Some(mulEqualsToken, tail) //'*='
+        case '*' :: '=' ::          tail => Some(multiplyAssignmentToken, tail) //'*='
         case '*' ::                 tail => Some(multiplyToken, tail) //'*'
 
-        case '%' :: '=' ::          tail => Some(modEqualsToken, tail) //'%='
+        case '%' :: '=' ::          tail => Some(moduloAssignmentToken, tail) //'%='
         case '%' ::                 tail => Some(moduloToken, tail) //'%'
 
-        case '=' :: '=' ::          tail => Some(doubleEqualsToken, tail) //'=='
-        case '=' ::                 tail => Some(singleEqualsToken, tail) //'='
+        case '=' :: '=' ::          tail => Some(equalToToken, tail) //'=='
+        case '=' ::                 tail => Some(assignToken, tail) //'='
 
         //TODO: Insert missing symbols here (only if there are any)
 
