@@ -28,7 +28,6 @@ case object leftShiftAssignmentOperator extends BinaryOperator
 case object leftShiftAssignmentOperator extends BinaryOperator
 case object exclusiveOrAssignmentOperator extends BinaryOperator
 
-//Ask Vicki about this in the grammar
 sealed trait Expression
 case class IntLiteralExpression(value: Int) extends Expression
 case class StringLiteralExpression(value: String) extends Expression
@@ -54,22 +53,17 @@ case object actor extends Type
 //DefActor: 'actor' ActorName '{' ActorItem* '}'
 case class ActorName(ActorItems: Seq[ActorItems]) extends DefActor
 
-//Stmt: IfStmt | WhileStmt | DecStmt | AssignStmt | 
-//ExitStmt | ApplyStmt | SendStmt | PrintStmt | PrintlnStmt
-//IfStmt: 'if' ParenExpr Block ['else' (IfStmt | Block)] 
+
 sealed trait Statement
 case class IfStmt (guard: Expresssion, ifTrue: Statement, ifFalse: Optional[Statement]) extends Statement
 case object BlockStatement (items: Seq[Statement]) extends Statement
-case object WhileStmt (guard: Expression, ) extends Statement
-case object DecStmt () extends Statmenet
-case object AssignStmt () extends Statement
-case object ExitStmt () extends Statement
-case object ApplyStmt () extends Statement
-case object SendStmt () extends Statement
-case object PrintStmt () extends Statement
-case object PrintlnStmt () extends Statement
+case object WhileStmt (guard: Expression, body: Statement) extends Statement
+case object DecStmt (theType: Type, theVar: Var, init: Expression) extends Statement 
+case object AssignStmt (theVar: Var, exp: Expression) extends Statement
+case object ExitStmt (num: Int) extends Statement
+case object ApplyStmt extends Statement
+case object SendStmt (hsm: HSMName, event: EventName, ) extends Statement
+
 
 sealed trait Block
-case class Block(item: Seq[Stmt]) extends Block //check Stmt vs Statement
-
-//def is a method, val is an instance variable
+case class Block(item: Seq[Statement]) extends Block 
