@@ -14,7 +14,7 @@ class LexerTest extends munit.FunSuite {
   test("5+5"){
     assertEquals(Tokenizer.lexer("5+5"), List(
       IntegerLiteralToken(5),
-      plusToken,
+      addToken,
       IntegerLiteralToken(5)
     ))
   }
@@ -23,7 +23,7 @@ class LexerTest extends munit.FunSuite {
     assertEquals(Tokenizer.lexer("          int num = 7;"),List(
       intToken,
       IdentifierToken("num"),
-      singleEqualsToken,
+      assignToken,
       IntegerLiteralToken(7),
       semicolonToken
     ))
@@ -37,7 +37,7 @@ class LexerTest extends munit.FunSuite {
     assertEquals(Tokenizer.lexer("// This is a comment\nint num = 7;"), List(
       intToken,
       IdentifierToken("num"),
-      singleEqualsToken,
+      assignToken,
       IntegerLiteralToken(7),
       semicolonToken
     ))
@@ -46,7 +46,7 @@ class LexerTest extends munit.FunSuite {
     assertEquals(Tokenizer.lexer("\n int num = 7;"), List(
       intToken,
       IdentifierToken("num"),
-      singleEqualsToken,
+      assignToken,
       IntegerLiteralToken(7),
       semicolonToken
     ))
@@ -61,7 +61,7 @@ class LexerTest extends munit.FunSuite {
     assertEquals(Tokenizer.lexer("int _name_number = 7"), List(
       intToken,
       IdentifierToken("_name_number"),
-      singleEqualsToken,
+      assignToken,
       IntegerLiteralToken(7)
     ))
   }
@@ -71,9 +71,13 @@ class LexerTest extends munit.FunSuite {
     assertEquals(Tokenizer.lexer("int _ = 7"), List(
       intToken,
       IdentifierToken("_"),
-      singleEqualsToken,
+      assignToken,
       IntegerLiteralToken(7)
     ))
+  }
+
+  test("unfinished string") {
+    assertEquals(Tokenizer.lexer("\" this is unfinished "), List())
   }
 
 }

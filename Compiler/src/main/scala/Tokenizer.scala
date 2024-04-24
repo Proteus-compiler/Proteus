@@ -19,8 +19,8 @@ case object divideToken extends Token // /
 case object moduloToken extends Token // %
 case object addToken extends Token // +
 case object subtractToken extends Token // -
-case object leftShiftToken extends Token // <<
-case object rightShiftToken extends Token // >>
+case object leftShiftAssignmentToken extends Token // <<
+case object rightShiftAssignmentToken extends Token // >>
 case object lessThanToken extends Token // <
 case object greaterThanToken extends Token // >
 case object lessThanOrEqualToToken extends Token // <=
@@ -176,7 +176,7 @@ object Tokenizer{
         case '>' :: '=' ::          tail => Some(greaterThanOrEqualToToken, tail) //'>='
         case '>' ::                 tail => Some(greaterThanToken, tail) //'>'
 
-        case '!' :: '=' ::          tail => Some(notEqualToToken, tail) //'!='
+        case '!' :: '=' ::          tail => Some(notEqualtoToken, tail) //'!='
         case '!' ::                 tail => Some(notToken, tail) //'!'
         case '&' :: '&' ::          tail => Some(andToken, tail) //'&&'
         case '|' :: '|' ::          tail => Some(orToken, tail) //'||'
