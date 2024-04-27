@@ -126,6 +126,9 @@ case class InitialState(stateName: String) extends StateItem
  *  EventMatch: EventName '{' [VarName (',' VarName)*] '}'
  *  OnBody: GoStmt | OnBlock
  *  GoStmt: JustGoStmt | GoIfStmt
+ *  JustGoStmt: 'go' StateName Block // can be shortened
+ *  GoIfStmt: 'goif' ParenExpr StateName Block ['else' (GoIfStmt | ElseGoStmt)] //what do
+ *  ElseGoStmt: 'go' StateName Block
  *  OnBlock: Block
  * */
 
@@ -146,6 +149,7 @@ case class OnBlock(block: Block) extends OnBody
  *  SendStmt : HSMName '!' EventName ExprListCurly ';'
  *  PrintStmt : 'print' ExprListParen ';'
  *  PrintlnStmt : 'println' ExprListParen ';'
+ *  ReturnStmt: 'return' Expr ';'
  * */
 case class Block(statements: List[Statement])
 sealed trait Statement
@@ -160,12 +164,8 @@ case class PrintStmt () extends Statement
 
 /** left over stuff
  *  DefHSM:   'statemachine' '{' StateItem* '}'
- *  ReturnStmt: 'return' Expr ';'
  *  FormalFuncArgs : '(' [Type VarName (',' Type VarName)*] ')'
  *  ExprListParen :'(' [Expr (',' Expr)*] ')'
  *  ExprListCurly :'{' [Expr (',' Expr)*] '}'
- *  JustGoStmt: 'go' StateName Block
- *  GoIfStmt: 'goif' ParenExpr StateName Block ['else' (GoIfStmt | ElseGoStmt)]
- *  ElseGoStmt: 'go' StateName Block
  * */
 
