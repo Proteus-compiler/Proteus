@@ -54,6 +54,7 @@ case object EventNameType extends Type
  *  StrExpr: STRING 
  *  BoolExpr: BOOL
  *  ApplyExpr: FuncName ExprListParen
+ *  ExprListParen :'(' [Expr (',' Expr)*] ')'
  *  BinOpExpr: ValExpr BinOp Expr
  *  ConstExpr: IntExpr | BoolExpr | StrExpr
  *  ActorExpr: 'actor' ActorName
@@ -66,14 +67,15 @@ case class VarExpression(name: String) extends Expression
 case class IntLiteralExpression(value: Int) extends Expression
 case class StringLiteralExpression(value: String) extends Expression
 case class BoolLiteralExpression(value: Boolean) extends Expression
-case class ApplyExpression(funcName: String, args: List[Expression]) extends Expression
+case class ApplyExpression(funcName: String, args: ExprListParen) extends Expression
+case class ExprListParen(expressions: List[Expression]) extends Expression
 case class BinaryOperationExpression(left: Expression, op: BinaryOperator, right: Expression) extends Expression
 
 case class ActorNameExpression(name: String) extends Expression
 case class StateNameExpression(name: String) extends Expression
 case class EventNameExpression(name: String) extends Expression
+case class ParenExpression(innerExpression: Expression) extends Expression
 
-case class HsmName(name: String)
 
 
 /** =================  Program Structure =================
@@ -81,13 +83,13 @@ case class HsmName(name: String)
  *  DefEvent: 'event' EventName '{' [Type (',' Type )*] }' ';'
  *  DefGlobalConst: 'const' Type VarName '=' ConstExpr ';'
  *  DefFunc: 'func' FuncName FormalFuncArgs ['->' Type] Block
- *  FuncName: NAME //May be redundant; implemented as STRING
+ *  FuncName: NAME
  * */
 case class Program(defEvents: List[DefEvent], defGlobalConsts: List[DefGlobalConst], 
                    defFuncs: List[DefFunc], defActors: List[DefActor])
 case class DefEvent(eventName: String, types: List[Type]) //Must have at least one
 case class DefGlobalConst(constType: Type, varName: String, constExpr: Expression)
-case class DefFunc(funcName: String, args: List[(Type, String)], returnType: Option[Type], block: Block)
+case class DefFunc(funcName: String, args: FormalFuncArgs, returnType: Option[Type], block: Block) extends ActorItem
 
 /** =================  Actors & their components =================
  *  DefActor: 'actor' ActorName '{' ActorItem* '}' //ActorName implemented as STRING
@@ -96,13 +98,15 @@ case class DefFunc(funcName: String, args: List[(Type, String)], returnType: Opt
  *  DefActorOn: 'on' EventMatch OnBlock
  *  DefMember: Type VarName '=' ConstExpr ';'
  *  DefMethod: 'func' FuncName FormalFuncArgs ['->' Type] Block
+ *  FormalFuncArgs : '(' [Type VarName (',' Type VarName)*] ')'
  * */
 case class DefActor(actorName: String, items: List[ActorItem])
 sealed trait ActorItem
-case class DefHSM(states: List[StateItem]) extends ActorItem
+case class DefHSM(stateItems: List[StateItem]) extends ActorItem
 case class DefActorOn(eventMatch: EventMatch, onBlock: Block) extends ActorItem
 case class DefMember(memberType: Type, varName: String, constExpr: Expression) extends ActorItem
 case class DefMethod(funcName: String, args: List[(Type, String)], returnType: Option[Type], block: Block) extends ActorItem
+case class FormalFuncArgs(args: List[(Type, String)])
 
 /** =================  States & transitions ================= 
  *  StateItem: DefOn | DefEntry | DefExit | DefMember | DefMethod | DefState | InitialState
@@ -116,10 +120,10 @@ case class DefMethod(funcName: String, args: List[(Type, String)], returnType: O
  *  
  *  */
 sealed trait StateItem
-case class DefState(stateName: String, items: List[StateItem]) extends StateItem
 case class DefOn(eventMatch: EventMatch, onBody: OnBody) extends StateItem
 case class DefEntry(block: Block) extends StateItem
 case class DefExit(block: Block) extends StateItem
+case class DefState(stateName: String, items: List[StateItem]) extends StateItem
 case class InitialState(stateName: String) extends StateItem
 
 /** =================  Matching events & actions ================= 
@@ -134,12 +138,16 @@ case class InitialState(stateName: String) extends StateItem
 
 case class EventMatch(eventName: String, varNames: List[String])
 sealed trait OnBody
-case class GoStmt(stateName: String, block: Block) extends OnBody
+sealed trait GoStmt extends OnBody
+case class JustGoStmt(stateName: String, block: Block) extends GoStmt
+case class GoIfStmt(condition: Expression, stateName: String, thenBlock: Block, elseGo: Option[GoStmt]) extends GoStmt
+case class ElseGoStmt(stateName: String, block: Block) extends GoStmt
 case class OnBlock(block: Block) extends OnBody
+
 
 /** =================  Blocks and statements ================= 
  *  Block: '{' Stmt* '}'
- *  Stmt: IfStmt | WhileStmt | DecStmt | AssignStmt | ExitStmt | ApplyStmt | SendStmt | PrintStmt | PrintlnStmt
+ *  Statement: IfStmt | WhileStmt | DecStmt | AssignStmt | ExitStmt | ApplyStmt | SendStmt | PrintStmt | PrintlnStmt
  *  IfStmt: 'if' ParenExpr Block ['else' (IfStmt | Block)] 
  *  WhileStmt: 'while' ParenExpr Block 
  *  DecStmt: Type VarName '=' Expr ';'
@@ -147,6 +155,7 @@ case class OnBlock(block: Block) extends OnBody
  *  ExitStmt: 'exit' '(' NUMBER ')' ';'
  *  ApplyStmt: ApplyExpr ';'
  *  SendStmt : HSMName '!' EventName ExprListCurly ';'
+ *  ExprListCurly :'{' [Expr (',' Expr)*] '}'
  *  PrintStmt : 'print' ExprListParen ';'
  *  PrintlnStmt : 'println' ExprListParen ';'
  *  ReturnStmt: 'return' Expr ';'
@@ -156,16 +165,11 @@ sealed trait Statement
 case class IfStmt (guard: Expression, ifTrueBlock: Statement, ifFalseBlock: Option[Block]) extends Statement
 case class WhileStmt (guard: Expression, body: Statement) extends Statement
 case class DecStmt (decType: Type, varName: String, expr: Expression) extends Statement
-case class AssignStmt (theVar: Var, exp: Expression) extends Statement
+case class AssignStmt(varName: String, expr: Expression) extends Statement
 case class ExitStmt (num: Int) extends Statement
-case object ApplyStmt extends Statement
-case class SendStmt (hsm: HSMName, event: EventName ) extends Statement
-case class PrintStmt () extends Statement
-
-/** left over stuff
- *  DefHSM:   'statemachine' '{' StateItem* '}'
- *  FormalFuncArgs : '(' [Type VarName (',' Type VarName)*] ')'
- *  ExprListParen :'(' [Expr (',' Expr)*] ')'
- *  ExprListCurly :'{' [Expr (',' Expr)*] '}'
- * */
-
+case class ApplyStmt(expression: ApplyExpression) extends Statement
+case class SendStmt(hsmName: String, eventName: String, expressions: ExprListCurly) extends Statement
+case class ExprListCurly(expressions: List[Expression]) extends Expression
+case class PrintStmt(expressions: ExprListParen) extends Statement
+case class PrintlnStmt(expressions: ExprListParen) extends Statement
+case class ReturnStmt(expression: Expression) extends Statement
