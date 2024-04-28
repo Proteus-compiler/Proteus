@@ -2,6 +2,8 @@
  *  @author Jorge Enriquez
  **/
 
+//TODO: HSMName is missing from the grammar
+
 /** =================  Binary Operators  =================
  * BinOp: '*' | '/' | '%' | '+' | '-' | '<<' | '>>' | '<' | '>' | '<=' | '>=' | '==' |
  * '!=' | '^' | '&&' | '||' | '*=' | '/=' | '%=' | '+=' | '-=' | '<<=' | '>>=' | '^='
@@ -34,7 +36,7 @@ case object ExclusiveOrAssignmentOperator extends BinaryOperator
 
 
 /** =================  Types & Expressions  =================
- *  Type: 'int' | 'string' | 'bool' | 'actorname' | 'statename' | 'eventname'
+ *  Type: 'int' | 'string' | 'bool' | 'actorname' | 'statename' | 'eventname' //Is actorname different from actor
  *  ActorName: NAME
  *  StateName: NAME
  *  EventName: NAME
@@ -56,7 +58,8 @@ case object EventNameType extends Type
  *  ApplyExpr: FuncName ExprListParen
  *  ExprListParen :'(' [Expr (',' Expr)*] ')'
  *  BinOpExpr: ValExpr BinOp Expr
- *  ConstExpr: IntExpr | BoolExpr | StrExpr
+ *  ConstExpr: IntExpr | BoolExpr | StrExpr 
+ *  // This needs clarifying
  *  ActorExpr: 'actor' ActorName
  *  StateExpr: 'state' StateName
  *  EventExpr: 'event' EventName
@@ -70,7 +73,10 @@ case class BoolLiteralExpression(value: Boolean) extends Expression
 case class ApplyExpression(funcName: String, args: ExprListParen) extends Expression
 case class ExprListParen(expressions: List[Expression]) extends Expression
 case class BinaryOperationExpression(left: Expression, op: BinaryOperator, right: Expression) extends Expression
-
+sealed trait ConstExpr extends Expression
+case class IntConstLiteralExpression(value: Int) extends ConstExpr
+case class StringConstLiteralExpression(value: String) extends ConstExpr
+case class BoolConstLiteralExpression(value: Boolean) extends ConstExpr
 case class ActorNameExpression(name: String) extends Expression
 case class StateNameExpression(name: String) extends Expression
 case class EventNameExpression(name: String) extends Expression
@@ -104,8 +110,8 @@ case class DefActor(actorName: String, items: List[ActorItem])
 sealed trait ActorItem
 case class DefHSM(stateItems: List[StateItem]) extends ActorItem
 case class DefActorOn(eventMatch: EventMatch, onBlock: Block) extends ActorItem
-case class DefMember(memberType: Type, varName: String, constExpr: Expression) extends ActorItem
-case class DefMethod(funcName: String, args: List[(Type, String)], returnType: Option[Type], block: Block) extends ActorItem
+case class DefMember(memberType: Type, varName: String, constExpr: Expression) extends ActorItem //Should this extend ActorItem or StateItem
+case class DefMethod(funcName: String, args: List[(Type, String)], returnType: Option[Type], block: Block) extends ActorItem //Should this extend ActorItem or StateItem
 case class FormalFuncArgs(args: List[(Type, String)])
 
 /** =================  States & transitions ================= 
