@@ -66,7 +66,7 @@ case object EventNameType extends Type
  *  ParenExpr: '(' Expr ')' 
  * */
 sealed trait Expression
-case class VarExpression(name: String) extends Expression
+case class VarExpression(name: String) extends Expression // this would usually take in VarName which would hold a string
 case class IntLiteralExpression(value: Int) extends Expression
 case class StringLiteralExpression(value: String) extends Expression
 case class BoolLiteralExpression(value: Boolean) extends Expression
@@ -174,7 +174,7 @@ case class DecStmt (decType: Type, varName: String, expr: Expression) extends St
 case class AssignStmt(varName: String, expr: Expression) extends Statement
 case class ExitStmt (num: Int) extends Statement
 case class ApplyStmt(expression: ApplyExpression) extends Statement
-case class SendStmt(hsmName: String, eventName: String, expressions: ExprListCurly) extends Statement
+case class SendStmt(hsmName: String, eventName: String, expressions: ExprListCurly) extends Statement //HSMName is not defined in the Grammar
 case class ExprListCurly(expressions: List[Expression]) extends Expression
 case class PrintStmt(expressions: ExprListParen) extends Statement
 case class PrintlnStmt(expressions: ExprListParen) extends Statement
