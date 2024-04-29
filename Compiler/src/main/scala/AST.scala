@@ -71,7 +71,7 @@ case class IntLiteralExpression(value: Int) extends Expression
 case class StringLiteralExpression(value: String) extends Expression
 case class BoolLiteralExpression(value: Boolean) extends Expression
 case class ApplyExpression(funcName: String, args: ExprListParen) extends Expression
-case class ExprListParen(expressions: List[Expression]) extends Expression
+case class ExprListParen(expressions: Seq[Expression]) extends Expression
 case class BinaryOperationExpression(left: Expression, op: BinaryOperator, right: Expression) extends Expression
 sealed trait ConstExpr extends Expression
 case class IntConstLiteralExpression(value: Int) extends ConstExpr
@@ -91,9 +91,9 @@ case class ParenExpression(innerExpression: Expression) extends Expression
  *  DefFunc: 'func' FuncName FormalFuncArgs ['->' Type] Block
  *  FuncName: NAME
  * */
-case class Program(defEvents: List[DefEvent], defGlobalConsts: List[DefGlobalConst], 
-                   defFuncs: List[DefFunc], defActors: List[DefActor])
-case class DefEvent(eventName: String, types: List[Type]) //Must have at least one
+case class Program(defEvents: Seq[DefEvent], defGlobalConsts: Seq[DefGlobalConst],
+                   defFuncs: Seq[DefFunc], defActors: Seq[DefActor])
+case class DefEvent(eventName: String, types: Seq[Type]) //Must have at least one
 case class DefGlobalConst(constType: Type, varName: String, constExpr: Expression)
 case class DefFunc(funcName: String, args: FormalFuncArgs, returnType: Option[Type], block: Block) extends ActorItem
 
@@ -106,13 +106,13 @@ case class DefFunc(funcName: String, args: FormalFuncArgs, returnType: Option[Ty
  *  DefMethod: 'func' FuncName FormalFuncArgs ['->' Type] Block
  *  FormalFuncArgs : '(' [Type VarName (',' Type VarName)*] ')'
  * */
-case class DefActor(actorName: String, items: List[ActorItem])
+case class DefActor(actorName: String, items: Seq[ActorItem]) //ActorName???
 sealed trait ActorItem
-case class DefHSM(stateItems: List[StateItem]) extends ActorItem
+case class DefHSM(stateItems: Seq[StateItem]) extends ActorItem
 case class DefActorOn(eventMatch: EventMatch, onBlock: Block) extends ActorItem
 case class DefMember(memberType: Type, varName: String, constExpr: Expression) extends ActorItem //Should this extend ActorItem or StateItem
-case class DefMethod(funcName: String, args: List[(Type, String)], returnType: Option[Type], block: Block) extends ActorItem //Should this extend ActorItem or StateItem
-case class FormalFuncArgs(args: List[(Type, String)])
+case class DefMethod(funcName: String, args: Seq[(Type, String)], returnType: Option[Type], block: Block) extends ActorItem //Should this extend ActorItem or StateItem
+case class FormalFuncArgs(args: Seq[(Type, String)])
 
 /** =================  States & transitions ================= 
  *  StateItem: DefOn | DefEntry | DefExit | DefMember | DefMethod | DefState | InitialState
@@ -129,7 +129,7 @@ sealed trait StateItem
 case class DefOn(eventMatch: EventMatch, onBody: OnBody) extends StateItem
 case class DefEntry(block: Block) extends StateItem
 case class DefExit(block: Block) extends StateItem
-case class DefState(stateName: String, items: List[StateItem]) extends StateItem
+case class DefState(stateName: String, items: Seq[StateItem]) extends StateItem
 case class InitialState(stateName: String) extends StateItem
 
 /** =================  Matching events & actions ================= 
@@ -142,7 +142,7 @@ case class InitialState(stateName: String) extends StateItem
  *  OnBlock: Block
  * */
 
-case class EventMatch(eventName: String, varNames: List[String])
+case class EventMatch(eventName: String, varNames: Seq[String])
 sealed trait OnBody
 sealed trait GoStmt extends OnBody
 case class JustGoStmt(stateName: String, block: Block) extends GoStmt
@@ -166,7 +166,7 @@ case class OnBlock(block: Block) extends OnBody
  *  PrintlnStmt : 'println' ExprListParen ';'
  *  ReturnStmt: 'return' Expr ';'
  * */
-case class Block(statements: List[Statement])
+case class Block(statements: Seq[Statement])
 sealed trait Statement
 case class IfStmt (guard: Expression, ifTrueBlock: Statement, ifFalseBlock: Option[Block]) extends Statement
 case class WhileStmt (guard: Expression, body: Statement) extends Statement
@@ -175,7 +175,7 @@ case class AssignStmt(varName: String, expr: Expression) extends Statement
 case class ExitStmt (num: Int) extends Statement
 case class ApplyStmt(expression: ApplyExpression) extends Statement
 case class SendStmt(hsmName: String, eventName: String, expressions: ExprListCurly) extends Statement //HSMName is not defined in the Grammar
-case class ExprListCurly(expressions: List[Expression]) extends Expression
+case class ExprListCurly(expressions: Seq[Expression]) extends Expression
 case class PrintStmt(expressions: ExprListParen) extends Statement
 case class PrintlnStmt(expressions: ExprListParen) extends Statement
 case class ReturnStmt(expression: Expression) extends Statement
