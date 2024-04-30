@@ -87,6 +87,8 @@ object Tokenizer{
   }
 
   /** lexer
+   * Takes in a string, and returns a List of tokens. The String is broken up into an array of characters,
+   * and recursively checked if it matches a symbol, integer or identifier. If none, then an exception is thrown
    *
    * @author Jorge Enriquez
    * @author Morgan Barrett
@@ -96,10 +98,10 @@ object Tokenizer{
   def lexer(input:String): List[Token] = {
 
     /** ReservedWords
-     *  @author Morgan Barrett
      *  Immutable Map that contains
      *  Key -> String
      *  Value -> Token
+     *  @author Morgan Barrett
      **/
     val ReservedWords: Map[String, Token] = Map(
       "actor" -> actorToken,
@@ -134,9 +136,6 @@ object Tokenizer{
     )
 
     /** tokenize
-     * @param input: List[Char]
-     * @param accum: List[Token]
-     * @return List[Token]
      * Takes input, a List of Characters, and checks if the List is empty.
      *
      * If the List is NOT empty, the function readToken is called, sending the List of Characters (input)
@@ -144,6 +143,9 @@ object Tokenizer{
      * The Token is then added to the accum List of Tokens, and tokenize is recursively called.
      *
      * If the List is empty, accum, the List of Tokens, is returned.
+     * @param input: The current List of Characters that are yet to be interpreted.
+     * @param accum: A List of tokens that have been parsed from input
+     * @return the List of tokens: accum
      * */
     @tailrec
     def tokenize(input: List[Char], accum: List[Token]): List[Token] = {
@@ -154,7 +156,14 @@ object Tokenizer{
         tokenize(tail, accum :+ token)
       }
     }
-    
+
+    /** readToken
+     * After removing Leading whitespaces, readToken will check three functions: tokenizeSymbol, tokenizeInteger,
+     * and tokenizeWord. If one of these functions returns a token, then readToken will return that token. If no token
+     * is returned, readToken will throw an exception.
+     * @param input: the current List of Characters waiting to be tokenized.
+     * @return a new token and the remaining List of Characters
+     **/
     def readToken(input: List[Char]): (Token, List[Char]) = {
       val inputWithoutLeadingSpaces = skipWhitespaceAndComments(input)
       tokenizeSymbol(inputWithoutLeadingSpaces)
@@ -162,7 +171,21 @@ object Tokenizer{
         .orElse(tokenizeWord(inputWithoutLeadingSpaces))
         .getOrElse(throw new IllegalArgumentException("Invalid Token"))
     }
-    
+
+    /** tokenizeSymbol
+     * tokenizeSymbol uses pattern matching to determing what the leading character in input is. If a case
+     * matches, it will check the following character incase of symbol with more than one character.
+     *
+     * Ex:
+     * '/=' is two characters: '/' and '='. Although '/' is a token itself (divideToken) tokenizeSymbol will
+     * check the next character for possible 2 character tokens. In this case, '=' follows, which returns
+     * divideAssignmentToken ('/=') and not divideToken ('/')
+     *
+     * if no case is met, the function returns none.
+     *
+     * @param input: the current List of Characters waiting to be tokenized.
+     * @return an optional pair of Token and the remaining List of Characters
+     * */
     def tokenizeSymbol(input: List[Char]): Option[(Token, List[Char])] = {
       input match {
         case '/' :: '=' ::          tail => Some(divideAssignmentToken, tail) //'/='
@@ -213,6 +236,14 @@ object Tokenizer{
       }
     }
 
+    /** tokenizeInteger
+     * tokenizeInteger will split input into two lists, one with numbers (num), and the other with
+     * remaining characters (tail). If num is empty, then there where no leading numbers in input and
+     * None is returned. If num is non-empty, then tail is checked for any incorrect syntax -
+     *
+     * @param input: remaining List of Characters waiting to be interpreted.
+     * @return an optional pair of Token and the remaining List of Characters
+     * */
     def tokenizeInteger(input: List[Char]): Option[(IntegerLiteralToken, List[Char])] = {
       val (num, tail) = takeWhileAndGetAfter(input)(_.isDigit)
       if (num.nonEmpty) {
@@ -249,8 +280,8 @@ object Tokenizer{
         case _ => ch
       }
     }
-    
 
+    //Initiallizes Tokenize. Creates Array of Characters and sends an empty List
     tokenize(input.toList, List.empty[Token])
   }
   

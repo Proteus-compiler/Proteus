@@ -76,8 +76,11 @@ class LexerTest extends munit.FunSuite {
     ))
   }
 
-  test("unfinished string") {
-    assertEquals(Tokenizer.lexer("\" this is unfinished "), List())
+  test("symbol following numbers") {
+    assertEquals(Tokenizer.lexer("123= "), List(
+      IntegerLiteralToken(123),
+      assignToken
+    ))
   }
 
 }
