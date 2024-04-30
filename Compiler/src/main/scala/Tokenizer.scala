@@ -73,15 +73,26 @@ case class StringLiteralToken(value: String) extends Token
 
 object Tokenizer{
 
-  //TODO: Need to implement FileReader and test comments. Ex:
-  // //This is a comment
-  // int num = 7;
-  //TODO: We need newLine Tokens
+  //TODO: We need newLine Tokens? Maybe?
+  /** main
+   *  main function calls lexer function. Takes in an Array of Strings called args
+   *  converts it into a string, and sends it to the lexer. args will be the input file.
+   *
+   * @param args an Array of Strings taken from the command line when main is called
+   **/
   def main(args: Array[String]): Unit = {
-    val tokens = lexer("//comment")
+    val fileString = args.mkString(" ")
+    val tokens = lexer(fileString)
     print(tokens)
   }
 
+  /** lexer
+   *
+   * @author Jorge Enriquez
+   * @author Morgan Barrett
+   * @param input A String that holds the input file
+   * @return a list of Tokens
+   **/
   def lexer(input:String): List[Token] = {
 
     /** ReservedWords
