@@ -239,7 +239,9 @@ object Tokenizer{
     /** tokenizeInteger
      * tokenizeInteger will split input into two lists, one with numbers (num), and the other with
      * remaining characters (tail). If num is empty, then there where no leading numbers in input and
-     * None is returned. If num is non-empty, then tail is checked for any incorrect syntax -
+     * None is returned. If num is non-empty, then tail is checked for any incorrect syntax. If incorrect
+     * syntax is found, an exception is thrown. Otherwise, a IntergerLiteralToken and the remaining list
+     * of Characters are returned.
      *
      * @param input: remaining List of Characters waiting to be interpreted.
      * @return an optional pair of Token and the remaining List of Characters
@@ -254,6 +256,15 @@ object Tokenizer{
       } else None
     }
 
+    /** tokenizeWord
+     * tokenizeWord will take all characters that are not whitespace and turn them into an IdentifierToken.
+     * Will return None if leading character in input is not a letter. Otherwise will begin building a word.
+     * As the word is building, it is checked with ReservedWords. If ReservedWords holds that word, it returns
+     * a token from ReservedWords. If not, it will return an IdentifierToken and the remaining list.
+ *
+     * @param input: remaining List of Characters waiting to be interpreted.
+     * @return an optional pair of Token and the remaining List of Characters
+     * */
     def tokenizeWord(input: List[Char]): Option[(Token, List[Char])] = {
       input match {
         case ch :: tail if ch.isLetter || ch == '_' =>
@@ -265,12 +276,24 @@ object Tokenizer{
       }
     }
 
+    /** takeWhileAndGetAfter
+     * Uses the function sent to determine a split in input: Before and After. Returns both.
+     * @param input remaining List of Characters waiting to be interpreted.
+     * @param function A higher order function that returns a boolean value.
+     * @return Two lists, separated by the boolean function.
+     * */
     def takeWhileAndGetAfter[A](input: List[A])(check: (A) => Boolean): (List[A], List[A]) = {
       val before = input.takeWhile(check)
       val after = input.drop(before.size)
       (before, after)
     }
 
+    /** skipWhitespaceAndComments
+     * recursively takes ch and pattern matches to filter out any comments and whitespaces. The end
+     * of comments are determined by a new line character '\n'
+     * @param ch List of Characters waiting to be interpreted.
+     * @return a filtered list with no leading whitespaces or comments
+     * */
     @tailrec
     def skipWhitespaceAndComments(ch: List[Char]): List[Char] = {
       ch match {
