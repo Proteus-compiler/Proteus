@@ -13,3 +13,5 @@ org.scala-ide.sdt.update-site/site.xml
 .vscode
 export
 .idea
+project/
+target/
