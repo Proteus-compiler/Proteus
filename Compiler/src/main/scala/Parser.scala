@@ -14,8 +14,9 @@ case class TokenRead(tokens: Seq[Token]) extends Reader[Token]{
 
 }
 
-// Parser combinator that checks if the first token in the list matches the expected token. Consumes it if it does.
-// Returns none if the next token does not match the expected token 
+
+// Delcaring a Parser type that takes in anything, cast as generic "A"
+// Checks if the first token in the list matches the expected, returns none if no match
 type Parser[A] = (List[Token]) => Option[(A, List[Token])]
 
 // def function accepts a parameter "expected" of type Token, returns value of type Parser[Unit]
@@ -76,13 +77,15 @@ def or[A](p1: Parser[A], p2: Parser[A]): Parser[A] = {
     }
   }
 }
-   /*  
-    def map[A, B](p: Parser[A], f: A => B): Parser[B] = {
-      (tokens1: List[Token]) => {
-        p(tokens1) match {
-          case Some((a, tokens2)) => Some((f(a), tokens2))
-          case _ => None
-        }
+/*
+  Parser combinator that parses input tokens of type A, the function 'f' converts them to type B. 
+  Then pattern matches lists of tokens, as above. 
+*/  
+  def map[A, B](p: Parser[A], f: A => B): Parser[B] = {
+    (tokens1: List[Token]) => {
+      p(tokens1) match {
+        case Some((a, tokens2)) => Some((f(a), tokens2))
+        case _ => None
       }
     }
     
@@ -127,3 +130,42 @@ def or[A](p1: Parser[A], p2: Parser[A]): Parser[A] = {
         (token, tokens2) <- getToken(tokens)
         
 */
+  }
+
+/*
+  Example method that parses in Expressions
+  Parser[(Unit, (Unit, (Variable, (Exp, (Exp, Unit)))))] 
+  ^^ is used to map the result of the parser to a different type
+*/
+lazy val exp: Parser[Expression] =
+  integer ^^ (i => IntegerLiteralExpresssion(i)) |
+  variable ^^ (name => VariableExpression(name)) |
+  (token(LeftParenToken) ~ token(LetToken) ~ variable ~ exp ~ exp ~ token(RightParenToken)) ^^ {
+    case _ ~ _ ~ x ~ e1 ~ e2 ~ _ => LetExp(x, e1, e2)
+  } |
+  (token(LeftParenToken) ~ op ~ exp ~ exp ~ token(RightParenToken)) ^^ {
+    case _ ~ o ~ e1 ~ e2 ~ _ => OpExp(o, e1, e2)
+  }
+
+/*
+  BinOp Parser
+*/
+def binop: Parser[BinaryOperator] = tokens => tokens match {
+  case Multiply :: tail => Some(Parser(MultiplyOperator, tail)) 
+  case Divide :: tail => Some(Parser(DivideOperator, tail))
+  case Modulo :: tail => Some(Parser(ModuloOperator, tail))
+  case Add :: tail => Some(Parser(ModuloOperator, tail))
+}
+
+/*
+  Type Parser
+*/
+def type: Parser[Type] = tokens => tokens match{
+  case Int :: tail => Some(Parser(IntType, tail))
+  case String :: tail => Some(Parser(StringType, tail))
+  case Bool :: tail => Some(Parser(BoolType, tail))
+}
+
+def exp: Parser[Expression] = tokens => tokens match{
+  case VarExp :: 
+}
