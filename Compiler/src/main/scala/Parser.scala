@@ -15,7 +15,14 @@ case class TokenRead(tokens: Seq[Token]) extends Reader[Token]{
 }
 
 
-// Delcaring a Parser type that takes in anything, cast as generic "A"
+//
+//TODO: Error handling
+//      Update Expressions in the grammar
+//      
+//
+
+
+// Declaring a Parser type that takes in anything, cast as generic "A"
 // Checks if the first token in the list matches the expected, returns none if no match
 type Parser[A] = (List[Token]) => Option[(A, List[Token])]
 
@@ -30,12 +37,12 @@ def token(expected: Token): Parser[Unit] = {
 }*/
 }
 
-// Function that parses Int tokens
+// Function that parses Int tokens 
 val integer: Parser[Int] = {
   (tokens: Token[Token]) => {
     tokens match {
-      IntegerToken(i) :: tail => Some((i, tail))
-      _ => None
+      case IntegerToken(i) :: tail => Some((i, tail))
+      case _ => None
     }
   }
 }
@@ -133,7 +140,7 @@ def or[A](p1: Parser[A], p2: Parser[A]): Parser[A] = {
   }
 
 /*
-  Example method that parses in Expressions
+  Example method (from a different grammar) that parses in Expressions 
   Parser[(Unit, (Unit, (Variable, (Exp, (Exp, Unit)))))] 
   ^^ is used to map the result of the parser to a different type
 */
@@ -147,8 +154,48 @@ lazy val exp: Parser[Expression] =
     case _ ~ o ~ e1 ~ e2 ~ _ => OpExp(o, e1, e2)
   }
 
+  // ^^ is mapping
+  // ^^^ is used for true/false (only one or the other are possible)
+  // there is something in the scala library that is specifically used for int literals
+  // lazy val exp allows you to use exp inside the method. if not lazy, it will be rejected
+  // DefGlobalConst: 'const' Type VarName '=' ConstExpr ';'
+  // 
+  // def repsep[T] for rules with a *
+
 /*
   BinOp Parser
+*/
+lazy val binop: Parser[BinaryOperator] =
+  multiplyToken ^^ ((a: Unit) => MultiplyOperator) |
+  divideToken ^^ ((a: Unit) => DivideOperator) |
+  moduloToken ^^ ((a: Unit) => ModuloOperator) |
+  addToken ^^ ((a: Unit) => AddOperator) |
+  subtractToken ^^ ((a: Unit) => SubtractOperator) |
+  leftShiftAssignmentToken ^^ ((a: Unit) => LeftShiftAssignmentOperator) |
+  rightShiftAssignmentToken ^^ ((a: Unit) => RightShiftAssignmentOperator) |
+  lessThanToken ^^ ((a: Unit) => LessThanOperator) |
+  greaterThanToken ^^ ((a: Unit) => GreaterThanOperator) |
+  lessThanOrEqualToToken ^^ ((a: Unit) => LessThanOrEqualToOperator) |
+  greaterThanOrEqualToToken ^^ ((a: Unit) => GreaterThanOrEqualToOperator) |
+  equalToToken ^^ ((a: Unit) => EqualToOperator) |
+  notEqualToToken ^^ ((a: Unit) => NotEqualToOperator) |
+  exclusiveOrToken ^^ ((a: Unit) => ExclusiveOrOperator) |
+  andToken ^^ ((a: Unit) => AndOperator) |
+  orToken ^^ ((a: Unit) => OrOperator) |
+  multiplyAssignmentToken ^^ ((a: Unit) => MultiplyAssignmentOperator) |
+  divideAssignmentToken ^^ ((a: Unit) => DivideAssignmentOperator) |
+  moduloAssignmentToken ^^ ((a: Unit) => ModuloAssignmentOperator) |
+  addAssignmentToken ^^ ((a: Unit) => AddAssignmentOperator) |
+  subtractAssignmentToken ^^ ((a: Unit) => SubtractAssignmentOperator) |
+  leftShiftToken ^^ ((a: Unit) => LeftShiftOperator) |
+  rightShiftToken ^^ ((a: Unit) => RightShiftOperator)
+  exclusiveOrAssignmentToken ^^ ((a: Unit) => ExclusiveOrAssignmentOperator)
+
+
+
+// =================  Everything below is tail recursive, probably won't use =================
+/*
+  BinOp Parser EXAMPLE 2
 */
 def binop: Parser[BinaryOperator] = tokens => tokens match {
   case Multiply :: tail => Some(Parser(MultiplyOperator, tail)) 
@@ -160,12 +207,12 @@ def binop: Parser[BinaryOperator] = tokens => tokens match {
 /*
   Type Parser
 */
-def type: Parser[Type] = tokens => tokens match{
+def types: Parser[Type] = tokens => tokens match{
   case Int :: tail => Some(Parser(IntType, tail))
   case String :: tail => Some(Parser(StringType, tail))
   case Bool :: tail => Some(Parser(BoolType, tail))
 }
 
-def exp: Parser[Expression] = tokens => tokens match{
+def expression: Parser[Expression] = tokens => tokens match{
   case VarExp :: 
 }
