@@ -33,6 +33,8 @@ case object orToken extends Token // ||
 case object multiplyAssignmentToken extends Token // *=
 case object divideAssignmentToken extends Token // /=
 case object moduloAssignmentToken extends Token // %=
+case object addAssignmentToken extends Token // +=
+case object subtractAssignmentToken extends Token // -=
 case object leftShiftToken extends Token // <<=
 case object rightShiftToken extends Token // >>=
 case object exclusiveOrAssignmentToken extends Token // ^=
