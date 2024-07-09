@@ -5,6 +5,7 @@ import Tokenizer
 import scala.util.parsing.combinator._
 import scala.util.parsing.combinator.Parsers
 
+
 /*
 Sequence (Seq[]) is used to represent indexed sequences that have a defined order of element i.e. guaranteed immutable. 
 The elements of sequences can be accessed using their indexes. 
@@ -24,6 +25,9 @@ case class TokenRead(tokens: Seq[Token]) extends Reader[Token]{
 
 // Declaring a Parser type that takes in anything, cast as generic "A"
 // Checks if the first token in the list matches the expected, returns none if no match
+
+// Parser combinator that checks if the first token in the list matches the expected token. Consumes it if it does.
+// Returns none if the next token does not match the expected token
 type Parser[A] = (List[Token]) => Option[(A, List[Token])]
 
 // def function accepts a parameter "expected" of type Token, returns value of type Parser[Unit]
@@ -43,6 +47,12 @@ val integer: Parser[Int] = {
     tokens match {
       case IntegerToken(i) :: tail => Some((i, tail))
       case _ => None
+// Function that parses Int tokens
+val integer: Parser[Int] = {
+  (tokens: Token[Token]) => {
+    tokens match {
+      IntegerToken(i) :: tail => Some((i, tail))
+      _ => None
     }
   }
 }
@@ -215,4 +225,57 @@ def types: Parser[Type] = tokens => tokens match{
 
 def expression: Parser[Expression] = tokens => tokens match{
   case VarExp :: 
+
 }
+
+   /*  
+    def map[A, B](p: Parser[A], f: A => B): Parser[B] = {
+      (tokens1: List[Token]) => {
+        p(tokens1) match {
+          case Some((a, tokens2)) => Some((f(a), tokens2))
+          case _ => None
+        }
+      }
+    }
+    
+    def star[A](p: Parser[A]): Parser[List[A]] = ...
+    
+    lazy val exp: Parser[Exp] =
+      (integer ^^ (i => IntegerLiteralExp(i))) |
+      (variable ^^ (name => VariableExp(name))) |
+      ((and(token(LeftParenToken), // Parser[(Unit, (Unit, (Variable, (Exp, (Exp, Unit)))))] 
+            and(token(LetToken),
+                and(variable
+                    and(exp,
+                        and(exp,
+                            token(RightParenToken))))))
+        token(RightParenToken)) ^^ { case _ ~ _ ~ x ~ e1 ~ e2 ~ _ => LetExp(x, e1, e2) }) |
+      ((LeftParenToken ~
+        op ~
+        exp ~
+        exp ~
+        RightParenToken) ^^ { case _ ~ o ~ e1 ~ e2 ~ _ => OpExp(o, e1, e2) }) |
+      ((LeftParenToken ~
+        SingleEqualsToken ~
+        variable ~
+        exp ~
+        RightParenToken) ^^ { _ ~ _ ~ x ~ e ~ _ => AssignExp(x, e) })
+    
+    def parseExp(tokens1: List[Token]): (Exp, List[Token]) = {
+      tokens1 match {
+        case IntegerLiteralToken(i) :: tokens2 => {
+          Some((IntegerLiteralExp(i), tokens2))
+        }
+        case LeftParenToken :: LetToken :: tokens2 => {
+          let (variable, tokens3) = parseVariable(tokens2)
+          let (initializer, tokens4) = parseExp(tokens3)
+          let (body, tokens5) = parseExp(tokens4)
+          tokens5 match {
+            case RightParenToken :: tokens6 => (LetExp(variable, initializer, body), tokens6)
+            case _ => throw ParseException(...)
+          }
+       }
+      for {
+        (token, tokens2) <- getToken(tokens)
+        
+*/
