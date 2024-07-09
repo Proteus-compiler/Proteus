@@ -8,10 +8,21 @@
 
 *.class
 *.tasty
-project/target/scala-2.12/sbt-1.0/update/update_cache_2.12/inputs
-project/target/scala-2.12/sbt-1.0/sync/copy-resource
-project/target/streams/compile/_global/_global/compileOutputs/previous
 project/
 target/
 .bsp/
-.class
+
+*.log
+*.jar
+*.war
+*.ear
+*.iml
+*.ipr
+*.iws
+.vscode/
+lib_managed/
+src_managed/
+dist/
+/.idea_modules/
+.cache/
+.history/
