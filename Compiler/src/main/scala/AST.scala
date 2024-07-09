@@ -40,16 +40,20 @@ case object ExclusiveOrAssignmentOperator extends BinaryOperator
  *  StateName: NAME
  *  EventName: NAME
  *  VarName: NAME
+ *  FuncName: NAME
+ *  HSMName: NAME
  * */
 sealed trait Type
 case object IntType extends Type
 case object StringType extends Type
 case object BoolType extends Type
 case class ActorName(name: String) extends Type
-case object StateName(name: String) extends Type
-case object EventName(name: String) extends Type
-case object VarName(name: String) extends Type
-case object HSMName(name:String) extends Type
+case class StateName(name: String) extends Type
+case class EventName(name: String) extends Type
+case class VarName(name: String) extends Type
+case class FuncName(name: String) extends Type
+case class HSMName(name: String) extends Type
+
 
 /** Expr: ValExpr | BinOpExpr | ApplyExpr
  *  ValExpr: VarExpr | IntExpr | StrExpr | BoolExpr | ActorExpr | StateExpr | EventExpr | ParenExpr
@@ -71,7 +75,7 @@ case class VarExpression(name: VarName) extends Expression // redundant??
 case class IntLiteralExpression(value: Int) extends Expression
 case class StringLiteralExpression(value: String) extends Expression
 case class BoolLiteralExpression(value: Boolean) extends Expression
-case class ApplyExpression(funcName: String, args: ExprListParen) extends Expression
+case class ApplyExpression(funcName: FuncName, args: ExprListParen) extends Expression
 case class ExprListParen(expressions: Seq[Expression]) extends Expression
 case class BinaryOperationExpression(left: Expression, op: BinaryOperator, right: Expression) extends Expression
 sealed trait ConstExpr extends Expression
@@ -113,7 +117,8 @@ case class DefHSM(stateItems: Seq[StateItem]) extends ActorItem
 case class DefActorOn(eventMatch: EventMatch, onBlock: Block) extends ActorItem
 case class DefMember_ActorItem(memberType: Type, varName: VarName, constExpr: ConstExpr) extends ActorItem
 case class DefMethod_ActorItem(funcName: String, args: Seq[(Type, String)], returnType: Option[Type], block: Block) extends ActorItem
-case class FormalFuncArgs(args: Seq[(Type, VarName)])
+//case class FormalFuncArgs(args: Seq[(Type, VarName)])
+case class FormalFuncArgs(typ: Type, theVar: VarName)
 
 /** =================  States & transitions ================= 
  *  StateItem: DefOn | DefEntry | DefExit | DefMember | DefMethod | DefState | InitialState
@@ -170,8 +175,9 @@ case class OnBlock(block: Block) extends OnBody
  *  PrintlnStmt : 'println' ExprListParen ';'
  *  ReturnStmt: 'return' Expr ';'
  * */
-case class Block(statements: Seq[Statement])
+
 sealed trait Statement
+case class Block(statements: Seq[Statement]) extends Statement
 case class IfStmt (guard: Expression, ifTrueBlock: Statement, ifFalseBlock: Option[Block]) extends Statement
 case class WhileStmt (guard: Expression, body: Statement) extends Statement
 case class DecStmt (decType: Type, varName: VarName, expr: Expression) extends Statement
@@ -183,4 +189,4 @@ case class ExprListCurly(expressions: Seq[Expression]) extends Expression
 case class PrintStmt(expressions: ExprListParen) extends Statement
 case class PrintlnStmt(expressions: ExprListParen) extends Statement
 case class ReturnStmt(expression: Expression) extends Statement
-
+case class ReturnStmt(expression: Expression) extends Statement
