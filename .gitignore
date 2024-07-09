@@ -14,3 +14,4 @@ project/target/streams/compile/_global/_global/compileOutputs/previous
 project/
 target/
 .bsp/
+.class
