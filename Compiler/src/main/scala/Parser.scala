@@ -1,6 +1,6 @@
-@author Morgan Barrett
+/** @author Morgan Barrett */
 
-import AST
+//import AST
 import scala.util.parsing.combinator.Parsers
 import scala.util.parsing.combinator._
 
@@ -22,8 +22,8 @@ type Parser[A] = (List[Token]) => Option[(A, List[Token])]
 def token(expected: Token): Parser[Unit] = {
   (tokens: List[Token]) => {
      tokens match {
-      head :: tail if head == expected => Some(((), tail))
-      _ => None
+       case head :: tail if head == expected => Some(((), tail))
+       case _ => None
     }
   }
 }
