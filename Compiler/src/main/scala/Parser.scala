@@ -7,7 +7,7 @@ import scala.util.parsing.combinator._
 Sequence (Seq[]) is used to represent indexed sequences that have a defined order of element i.e. guaranteed immutable. 
 The elements of sequences can be accessed using their indexes. 
 Sequences can also be accessed reversibly using the method reverse and reverseIterator
-*/
+
 case class TokenRead(tokens: Seq[Token]) extends Reader[Token]{
 
 }
@@ -138,3 +138,4 @@ def type: Parser[Type] = tokens => tokens match{
 def exp: Parser[Expression] = tokens => tokens match{
   case VarExp :: 
 }
+}*/
