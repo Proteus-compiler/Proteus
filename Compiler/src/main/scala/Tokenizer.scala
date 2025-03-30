@@ -8,8 +8,6 @@ case object rightBracesToken extends Token
 case object leftParenToken extends Token
 case object rightParenToken extends Token
 case object assignToken extends Token
-case object addAssignmentToken extends Token
-case object subtractAssignmentToken extends Token
 case object semicolonToken extends Token
 case object commaToken extends Token
 case object notToken extends Token

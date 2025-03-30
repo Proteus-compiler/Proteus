@@ -5,6 +5,7 @@
 .global-logging
 .tast-temp-directory
 .metals.sbt
+build.sbt
 
 *.class
 *.tasty
@@ -26,3 +27,22 @@ dist/
 /.idea_modules/
 .cache/
 .history/
+
+
+.class
+.iml
+.ipr
+.iws
+out
+.swp
+.swo
+.classpath
+.settings
+org.scala-ide.sdt.core/META-INF/MANIFEST.MF
+org.scala-ide.sdt.update-site/site.xml
+.tasty
+.vscode
+export
+.idea
+project/
+target/
