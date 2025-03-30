@@ -189,4 +189,3 @@ case class ExprListCurly(expressions: Seq[Expression]) extends Expression
 case class PrintStmt(expressions: ExprListParen) extends Statement
 case class PrintlnStmt(expressions: ExprListParen) extends Statement
 case class ReturnStmt(expression: Expression) extends Statement
-case class ReturnStmt(expression: Expression) extends Statement

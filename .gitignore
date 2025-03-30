@@ -5,7 +5,6 @@
 .global-logging
 .tast-temp-directory
 .metals.sbt
-build.sbt
 
 *.class
 *.tasty
