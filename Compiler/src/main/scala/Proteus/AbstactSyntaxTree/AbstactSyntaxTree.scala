@@ -1,3 +1,5 @@
+package Proteus.AbstractSyntaxTree
+
 /** @author Morgan Barrett 
  *  @author Jorge Enriquez
  **/

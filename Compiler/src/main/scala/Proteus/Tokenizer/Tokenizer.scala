@@ -1,3 +1,5 @@
+package Proteus.Tokenizer
+
 import scala.annotation.tailrec
 
 sealed trait Token
