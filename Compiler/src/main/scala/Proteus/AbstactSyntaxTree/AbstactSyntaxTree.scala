@@ -116,7 +116,7 @@ case class DefFunc(funcName: String, args: FormalFuncArgs, returnType: Option[Ty
 case class DefActor(name: ActorName, items: Seq[ActorItem])
 sealed trait ActorItem
 case class DefHSM(stateItems: Seq[StateItem]) extends ActorItem
-case class DefActorOn(eventMatch: EventMatch, onBlock: Block) extends ActorItem
+case class DefActorOn(eventMatch: EventMatch, onBlock: OnBlock) extends ActorItem
 case class DefMember_ActorItem(memberType: Type, varName: VarName, constExpr: ConstExpr) extends ActorItem
 case class DefMethod_ActorItem(funcName: String, args: Seq[(Type, String)], returnType: Option[Type], block: Block) extends ActorItem
 //case class FormalFuncArgs(args: Seq[(Type, VarName)])
